@@ -562,7 +562,7 @@ class Pages:
         self.w.pyvcp1.set_active(self.d.pyvcp1)
         self.w.pyvcpblank.set_active(self.d.pyvcpblank)
         self.w.pyvcpconnect.set_active(self.d.pyvcpconnect)
-        self.on_gladevcp_toggled()
+        self.a.update_gladevcp()
         for i in ("gladevcp","gladesample","gladeexists","spindlespeedbar","spindleatspeed","gladevcpforcemax",
                 "zerox","zeroy","zeroz","zeroa","autotouchz","centerembededgvcp","sideembededgvcp","standalonegvcp",
                 "gladevcpposition","gladevcpsize","pyvcpposition","pyvcpsize","axisforcemax"):

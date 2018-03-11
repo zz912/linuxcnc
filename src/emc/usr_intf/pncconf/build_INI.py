@@ -57,7 +57,7 @@ class INI:
                 else:
                     print >>file, "EMBED_TAB_NAME = User Panel"
                     print >>file, "EMBED_TAB_LOCATION = ntb_user_tabs"
-                print >>file, "EMBED_TAB_COMMAND = gladevcp -c gladevcp%s -H gvcp_call_list.hal -x {XID} gvcp-panel.ui"%(theme)
+                print >>file, "EMBED_TAB_COMMAND = gladevcp -c gladevcp %s -H gvcp_call_list.hal -x {XID} gvcp-panel.ui"%(theme)
 
         if self.d.position_offset == 1: temp ="RELATIVE"
         else: temp = "MACHINE"
