@@ -224,8 +224,8 @@ typedef union hal_data_u {
     inside a larger structure.
 */
 typedef struct hal_list_t {
-    SHMFIELD(hal_list_t) next;			/* next element in list */
-    SHMFIELD(hal_list_t) prev;			/* previous element in list */
+    SHMFIELD(rtapi_intptr_t) next;			/* next element in list */
+    SHMFIELD(rtapi_intptr_t) prev;			/* previous element in list */
 } hal_list_t;
 
 /** HAL "oldname" data structure.
@@ -233,7 +233,7 @@ typedef struct hal_list_t {
     store the original name.
 */
 typedef struct hal_oldname_t {
-    SHMFIELD(hal_oldname_t) next_ptr;		/* next struct (used for free list only) */
+    SHMFIELD(rtapi_intptr_t) next_ptr;		/* next struct (used for free list only) */
     char name[HAL_NAME_LEN + 1];	/* the original name */
 } hal_oldname_t;
 
@@ -265,22 +265,22 @@ typedef struct hal_data_t {
 			        /* prefix of name for new instance */
     int shmem_bot;		/* bottom of free shmem (first free byte) */
     int shmem_top;		/* top of free shmem (1 past last free) */
-    SHMFIELD(hal_comp_t) comp_list_ptr;		/* root of linked list of components */
-    SHMFIELD(hal_pin_t) pin_list_ptr;		/* root of linked list of pins */
-    SHMFIELD(hal_sig_t) sig_list_ptr;		/* root of linked list of signals */
-    SHMFIELD(hal_param_t) param_list_ptr;		/* root of linked list of parameters */
-    SHMFIELD(hal_funct_t) funct_list_ptr;		/* root of linked list of functions */
-    SHMFIELD(hal_thread_t) thread_list_ptr;	/* root of linked list of threads */
+    SHMFIELD(rtapi_intptr_t) comp_list_ptr;		/* root of linked list of components */
+    SHMFIELD(rtapi_intptr_t) pin_list_ptr;		/* root of linked list of pins */
+    SHMFIELD(rtapi_intptr_t) sig_list_ptr;		/* root of linked list of signals */
+    SHMFIELD(rtapi_intptr_t) param_list_ptr;		/* root of linked list of parameters */
+    SHMFIELD(rtapi_intptr_t) funct_list_ptr;		/* root of linked list of functions */
+    SHMFIELD(rtapi_intptr_t) thread_list_ptr;	/* root of linked list of threads */
     long base_period;		/* timer period for realtime tasks */
     int threads_running;	/* non-zero if threads are started */
-    SHMFIELD(hal_oldname_t) oldname_free_ptr;	/* list of free oldname structs */
-    SHMFIELD(hal_comp_t) comp_free_ptr;		/* list of free component structs */
-    SHMFIELD(hal_pin_t) pin_free_ptr;		/* list of free pin structs */
-    SHMFIELD(hal_sig_t) sig_free_ptr;		/* list of free signal structs */
-    SHMFIELD(hal_param_t) param_free_ptr;		/* list of free parameter structs */
-    SHMFIELD(hal_funct_t) funct_free_ptr;		/* list of free function structs */
+    SHMFIELD(rtapi_intptr_t) oldname_free_ptr;	/* list of free oldname structs */
+    SHMFIELD(rtapi_intptr_t) comp_free_ptr;		/* list of free component structs */
+    SHMFIELD(rtapi_intptr_t) pin_free_ptr;		/* list of free pin structs */
+    SHMFIELD(rtapi_intptr_t) sig_free_ptr;		/* list of free signal structs */
+    SHMFIELD(rtapi_intptr_t) param_free_ptr;		/* list of free parameter structs */
+    SHMFIELD(rtapi_intptr_t) funct_free_ptr;		/* list of free function structs */
     hal_list_t funct_entry_free;	/* list of free funct entry structs */
-    SHMFIELD(hal_thread_t) thread_free_ptr;	/* list of free thread structs */
+    SHMFIELD(rtapi_intptr_t) thread_free_ptr;	/* list of free thread structs */
     int exact_base_period;      /* if set, pretend that rtapi satisfied our
 				   period request exactly */
     unsigned char lock;         /* hal locking, can be one of the HAL_LOCK_* types */
@@ -292,7 +292,7 @@ typedef struct hal_data_t {
     component calls hal_init().
 */
 struct hal_comp_t {
-    SHMFIELD(hal_comp_t) next_ptr;		/* next component in the list */
+    SHMFIELD(rtapi_intptr_t) next_ptr;		/* next component in the list */
     int comp_id;		/* component ID (RTAPI module id) */
     int mem_id;			/* RTAPI shmem ID used by this comp */
     int type;			/* 1 if realtime, 0 if not */
@@ -308,7 +308,7 @@ struct hal_comp_t {
     This structure contains information about a 'pin' object.
 */
 struct hal_pin_t {
-    SHMFIELD(hal_pin_t) next_ptr;		/* next pin in linked list */
+    SHMFIELD(rtapi_intptr_t) next_ptr;		/* next pin in linked list */
     SHMFIELD(void*) data_ptr_addr;		/* address of pin data pointer */
     SHMFIELD(hal_comp_t) owner_ptr;		/* component that owns this pin */
     SHMFIELD(hal_sig_t) signal;			/* signal to which pin is linked */
@@ -323,7 +323,7 @@ struct hal_pin_t {
     This structure contains information about a 'signal' object.
 */
 struct hal_sig_t {
-    SHMFIELD(hal_sig_t) next_ptr;		/* next signal in linked list */
+    SHMFIELD(rtapi_intptr_t) next_ptr;		/* next signal in linked list */
     SHMFIELD(void*) data_ptr;		/* offset of signal value */
     hal_type_t type;		/* data type */
     int readers;		/* number of input pins linked */
@@ -336,7 +336,7 @@ struct hal_sig_t {
     This structure contains information about a 'parameter' object.
 */
 struct hal_param_t {
-    SHMFIELD(hal_param_t) next_ptr;		/* next parameter in linked list */
+    SHMFIELD(rtapi_intptr_t) next_ptr;		/* next parameter in linked list */
     SHMFIELD(void*) data_ptr;		/* offset of parameter value */
     SHMFIELD(hal_comp_t) owner_ptr;		/* component that owns this signal */
     SHMFIELD(hal_oldname_t) oldname;		/* old name if aliased, else zero */
@@ -362,7 +362,7 @@ struct hal_param_t {
 */
 
 struct hal_funct_t {
-    SHMFIELD(hal_funct_t) next_ptr;		/* next function in linked list */
+    SHMFIELD(rtapi_intptr_t) next_ptr;		/* next function in linked list */
     int uses_fp;		/* floating point flag */
     SHMFIELD(hal_comp_t) owner_ptr;		/* component that added this funct */
     int reentrant;		/* non-zero if function is re-entrant */
@@ -385,7 +385,7 @@ struct hal_funct_entry_t {
 #define HAL_STACKSIZE 16384	/* realtime task stacksize */
 
 struct hal_thread_t {
-    SHMFIELD(hal_thread_t) next_ptr;		/* next thread in linked list */
+    SHMFIELD(rtapi_intptr_t) next_ptr;		/* next thread in linked list */
     int uses_fp;		/* floating point flag */
     long int period;		/* period of the thread, in nsec */
     int priority;		/* priority of the thread */
