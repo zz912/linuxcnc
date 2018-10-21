@@ -175,8 +175,8 @@ currently executing gcode file.
 *flood*:: '(returns integer)' -
 flood enabled.
 
-*g5x_index*:: '(returns string)' -
-currently active coordinate system, G54=0, G55=1 etc.
+*g5x_index*:: '(returns int)' -
+currently active coordinate system, G54=1, G55=2 etc.
 
 *g5x_offset*:: '(returns tuple of floats)' -
 offset of the currently active coordinate system.
