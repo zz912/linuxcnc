@@ -43,12 +43,14 @@ class HandlerClass:
     # gscreen is for access to gscreens methods        #
     ####################################################
     def __init__(self, halcomp,builder,useropts,gscreen):
-            self.emc = gscreen.emc
-            self.cmd = gscreen.emc.emccommand
-            self.data = gscreen.data
-            self.widgets = gscreen.widgets
-            self.gscreen = gscreen
-
+        self.emc = gscreen.emc
+        self.cmd = gscreen.emc.emccommand
+        self.data = gscreen.data
+        self.widgets = gscreen.widgets
+        self.gscreen = gscreen
+        self.data['select-x'] = False
+        self.data['select-y'] = False
+        self.data['select-z'] = False
     ############################
     # **** Signal SECTION **** #
     ############################
@@ -98,9 +100,6 @@ class HandlerClass:
         self.widgets.hal_status.connect("state-estop",lambda w: self.widgets.led_estop.set_active(0))
         self.widgets.hal_status.connect("state-on",lambda w: self.widgets.led_machine_on.set_active(1))
         self.widgets.hal_status.connect("state-off",lambda w: self.widgets.led_machine_on.set_active(0))
-        self.widgets.hal_status.connect("error-message",self.on_display_message)
-        self.widgets.hal_status.connect("display-message",self.on_display_message)
-        self.widgets.hal_status.connect("text-message",self.on_display_message)
 
     ###################################################
     # **** Special Functions called from GSCREEN **** #
@@ -158,12 +157,18 @@ class HandlerClass:
     # If we need extra HAL pins here is where we do it.
     # Note you must import hal_glib at the top of this script to do it.
     def initialize_pins(self):
-        self.data['select-x'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-x', hal.HAL_BIT, hal.HAL_IN))
-        self.data['select-x'].connect('value-changed', self.on_select_x)
-        self.data['select-y'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-y', hal.HAL_BIT, hal.HAL_IN))
-        self.data['select-y'].connect('value-changed', self.on_select_y)
-        self.data['select-z'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-z', hal.HAL_BIT, hal.HAL_IN))
-        self.data['select-z'].connect('value-changed', self.on_select_z)
+        self.data['select-x-in'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-x-in', hal.HAL_BIT, hal.HAL_IN))
+        self.data['select-x-in'].connect('value-changed', self.on_select_x)
+        self.data['select-x-out'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-x-out', hal.HAL_BIT, hal.HAL_OUT))
+
+        self.data['select-y-in'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-y-in', hal.HAL_BIT, hal.HAL_IN))
+        self.data['select-y-in'].connect('value-changed', self.on_select_y)
+        self.data['select-y-out'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-y-out', hal.HAL_BIT, hal.HAL_OUT))
+
+        self.data['select-z-in'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-z-in', hal.HAL_BIT, hal.HAL_IN))
+        self.data['select-z-in'].connect('value-changed', self.on_select_z)
+        self.data['select-z-out'] = hal_glib.GPin(self.gscreen.halcomp.newpin('select-z-out', hal.HAL_BIT, hal.HAL_OUT))
+
         self.data['jog-rate'] = hal_glib.GPin(self.gscreen.halcomp.newpin('jog-rate', hal.HAL_FLOAT, hal.HAL_IN))
         self.data['jog-rate'].connect('value-changed', self.on_jog_rate_changed)
         self.data['jog-incr'] = hal_glib.GPin(self.gscreen.halcomp.newpin('jog-incr', hal.HAL_FLOAT, hal.HAL_IN))
@@ -177,6 +182,25 @@ class HandlerClass:
     ####################
     # HELPER FUNCTIONS #
     ####################
+
+    def flip(self, var):
+        var = var *-1+1
+        return var
+
+    def toggle_x(self):
+        self.data['select-x'] = self.flip(self.data['select-x'])
+        self.widgets.label_axis_x.set_attributes(self.set_dro_attributes(self.data['select-x']))
+        self.data['select-x-out'].set(self.data['select-x'])
+
+    def toggle_y(self):
+        self.data['select-y'] = self.flip(self.data['select-y'])
+        self.widgets.label_axis_y.set_attributes(self.set_dro_attributes(self.data['select-y']))
+        self.data['select-y-out'].set(self.data['select-y'])
+
+    def toggle_z(self):
+        self.data['select-z'] = self.flip(self.data['select-z'])
+        self.widgets.label_axis_z.set_attributes(self.set_dro_attributes(self.data['select-z']))
+        self.data['select-z-out'].set(self.data['select-z'])
 
     def set_dro_attributes(self,state):
         attr = pango.AttrList()
@@ -248,11 +272,14 @@ class HandlerClass:
     ###########################
 
     def on_select_x(self,pin):
-        self.widgets.label_axis_x.set_attributes(self.set_dro_attributes(pin.get()))
+        if pin.get():
+            self.toggle_x()
     def on_select_y(self,pin):
-        self.widgets.label_axis_y.set_attributes(self.set_dro_attributes(pin.get()))
+        if pin.get():
+            self.toggle_y()
     def on_select_z(self,pin):
-        self.widgets.label_axis_z.set_attributes(self.set_dro_attributes(pin.get()))
+        if pin.get():
+            self.toggle_z()
     def on_jog_rate_changed(self,pin):
         self.widgets.label_jog_speed.set_text('%.1f IPM'%pin.get())
     def on_jog_incr_changed(self,pin):
@@ -348,9 +375,9 @@ class HandlerClass:
             self.widgets.hpane.set_position(400)
         self.widgets.textview_mcode.show()
         self.widgets.textview_gcode.show()
-        self.data['select-x'].set(False)
-        self.data['select-y'].set(False)
-        self.data['select-z'].set(False)
+        self.data['select-x'] = False
+        self.data['select-y'] = False
+        self.data['select-z'] = False
 
     def on_display_message(self,widget,data):
         print 'message: ',data
@@ -374,13 +401,13 @@ class HandlerClass:
         else:
             self.widgets.hpane.set_position(1000)
     def on_button_zero_axis_clicked(self,widget):
-        if self.data['select-x'].get():
+        if self.data['select-x']:
             self.gscreen.mdi_control.set_axis('x',0)
             self.widgets.statusbar1.push(1,"Zero Axis X")
-        if self.data['select-y'].get():
+        if self.data['select-y']:
             self.gscreen.mdi_control.set_axis('y',0)
             self.widgets.statusbar1.push(1,"Zero Axis Y")
-        if self.data['select-z'].get():
+        if self.data['select-z']:
             self.gscreen.mdi_control.set_axis('z',0)
             self.widgets.statusbar1.push(1,"Zero Axis Z")
         self.widgets.hal_status.emit('reload-display')
@@ -392,13 +419,13 @@ class HandlerClass:
             if value == None:
                 return
             pos = self.gscreen.get_qualified_input(value)
-            if self.data['select-x'].get():
+            if self.data['select-x']:
                 self.gscreen.mdi_control.set_axis('x',pos)
                 self.widgets.statusbar1.push(1,"Touch Off Axis %s: %f"%('X',pos))
-            if self.data['select-y'].get():
+            if self.data['select-y']:
                 self.gscreen.mdi_control.set_axis('y',pos)
                 self.widgets.statusbar1.push(1,"Touch Off Axis %s: %f"%('Y',pos))
-            if self.data['select-z'].get():
+            if self.data['select-z']:
                 self.gscreen.mdi_control.set_axis('z',pos)
                 self.widgets.statusbar1.push(1,"Touch Off Axis %s: %f"%('Z',pos))
             self.widgets.hal_status.emit('reload-display')
@@ -453,13 +480,13 @@ class HandlerClass:
     def on_button_statusbar_pop_clicked(self,widget):
         self.widgets.statusbar1.pop(self.statusbar_id)
     def on_button_unhome_selected_clicked(self,widget):
-        if self.data['select-x'].get():
+        if self.data['select-x']:
             self.cmd.unhome(0)
             self.widgets.statusbar1.push(1,"Unhome Axis X")
-        if self.data['select-y'].get():
+        if self.data['select-y']:
             self.cmd.unhome(1)
             self.widgets.statusbar1.push(1,"Unhome Axis Y")
-        if self.data['select-z'].get():
+        if self.data['select-z']:
             self.cmd.unhome(2)
             self.widgets.statusbar1.push(1,"Unhome Axis Z")
 
@@ -555,11 +582,11 @@ class HandlerClass:
             if mode == 1: # manual
                 print 'home selected'
                 self.cmd.teleop_enable(0)
-                if self.data['select-x'].get():
+                if self.data['select-x']:
                     self.cmd.home(0)
-                elif self.data['select-y'].get():
+                elif self.data['select-y']:
                     self.cmd.home(1)
-                elif self.data['select-z'].get():
+                elif self.data['select-z']:
                     self.cmd.home(2)
         return True
     def on_keycall_escape(self,state,SHIFT,CNTRL,ALT):
@@ -580,21 +607,21 @@ class HandlerClass:
 
     def on_keycall_x(self,state,SHIFT,CNTRL,ALT):
         if state and self.widgets.hal_status.stat.task_mode == 1:
-            self.data['select-x'].set(self.data['select-x'].get()*-1+1)
+            self.toggle_x()
             mode = self.widgets.hal_status.stat.task_mode
             if mode == 1: # manual
                 pass
             return True
     def on_keycall_y(self,state,SHIFT,CNTRL,ALT):
         if state and self.widgets.hal_status.stat.task_mode == 1:
-            self.data['select-y'].set(self.data['select-y'].get()*-1+1)
+            self.toggle_y()
             mode = self.widgets.hal_status.stat.task_mode
             if mode == 1: # manual
                 pass
             return True
     def on_keycall_z(self,state,SHIFT,CNTRL,ALT):
         if state and self.widgets.hal_status.stat.task_mode == 1:
-            self.data['select-z'].set(self.data['select-z'].get()*-1+1)
+            self.toggle_z()
             mode = self.widgets.hal_status.stat.task_mode
             if mode == 1: # manual
                 pass
