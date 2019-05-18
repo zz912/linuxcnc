@@ -241,6 +241,9 @@ static int forceCommand(RCS_CMD_MSG * msg)
 	return -1;
     }
     // send it immediately
+    if (msg->type == EMC_TOOL_INIT_TYPE){
+    rcs_print( "************FOCED!!!! EMC_tool_INIT %d\n",msg->type);
+    }
     msg->serial_number = ++emcIoCommandSerialNumber;
     if (0 != emcIoCommandBuffer->write(msg)) {
 	rcs_print_error("Failed to send command to  IO level (%s:%s)\n",
@@ -253,11 +256,13 @@ static int forceCommand(RCS_CMD_MSG * msg)
 	largest_io_command_size = std::max<long>(msg->size, 4096);
 	last_io_command = (RCS_CMD_MSG *) realloc(last_io_command, largest_io_command_size);
     }
-
+    rcs_print( "************FOCED!!!! EMC_msg %d\n",msg->type);
     if (0 != last_io_command) {
 	memcpy(last_io_command, msg, msg->size);
     }
-
+    if (msg->type == EMC_TOOL_INIT_TYPE){
+    rcs_print( "************FOCED!!!! EMC_tool_INIT-2 %d\n",msg->type);
+    }
     return 0;
 }
 
@@ -478,7 +483,7 @@ Task::~Task() {};
 int Task::emcIoInit()
 {
     EMC_TOOL_INIT ioInitMsg;
-
+        rcs_print( "************STARTUP_INIT-a\n");
     // get NML buffer to emcio
     if (0 != emcioNmlGet()) {
 	rcs_print_error("emcioNmlGet() failed.\n");
@@ -489,11 +494,12 @@ int Task::emcIoInit()
 	return -1;
     }
     // send init command to emcio
+        rcs_print( "************STARTUP_INIT-b\n");
     if (forceCommand(&ioInitMsg)) {
 	rcs_print_error("Can't forceCommand(ioInitMsg)\n");
 	return -1;
     }
-
+        rcs_print( "************STARTUP_INIT after\n");
     return 0;
 }
 

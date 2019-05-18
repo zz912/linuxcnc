@@ -97,6 +97,7 @@ struct iocontrol_str {
                                    only valid when tool-prepare=TRUE */
     hal_s32_t tool_prep_index; /* internal array index of prepped tool above */
     hal_s32_t *tool_prep_number;/* output, pin that holds the tool number to be prepared, only valid when tool-prepare=TRUE */
+    hal_s32_t *tool_initial_number;/* input, pin that holds the current tool number */
     hal_s32_t *tool_number;     /* output, pin that holds the tool number currently in the spindle */
     hal_bit_t *tool_prepared;	/* input, pin that notifies that the tool has been prepared */
     //tool-change
@@ -371,6 +372,16 @@ int iocontrol_hal_init(void)
 	hal_exit(comp_id);
 	return -1;
     }
+    // initial-tool-number
+    retval = hal_pin_s32_newf(HAL_IN, &(iocontrol_data->tool_initial_number), comp_id, 
+			      "iocontrol.%d.tool-initial-number", n);
+    if (retval < 0) {
+	rtapi_print_msg(RTAPI_MSG_ERR,
+			"IOCONTROL: ERROR: iocontrol %d pin tool-current-number export failed with err=%i\n",
+			n, retval);
+	hal_exit(comp_id);
+	return -1;
+    }
     // tool-prep-number
     retval = hal_pin_s32_newf(HAL_OUT, &(iocontrol_data->tool_prep_number), comp_id, 
 			      "iocontrol.%d.tool-prep-number", n);
@@ -498,29 +509,6 @@ void hal_init_pins(void)
 *
 * Called By: main every CYCLE
 ********************************************************************/
-int read_hal_inputs(void)
-{
-    int oldval, retval = 0;
-
-    oldval = emcioStatus.aux.estop;
-
-    if ( *(iocontrol_data->emc_enable_in)==0) //check for estop from HW
-	emcioStatus.aux.estop = 1;
-    else
-	emcioStatus.aux.estop = 0;
-
-    if (oldval != emcioStatus.aux.estop) {
-	retval = 1;
-    }
-
-
-    oldval = emcioStatus.lube.level;
-    emcioStatus.lube.level = *(iocontrol_data->lube_level);	//check for lube_level from HW
-    if (oldval != emcioStatus.lube.level) {
-	retval = 1;
-    }
-    return retval;
-}
 
 void load_tool(int pocket) {
     if(random_toolchanger) {
@@ -562,6 +550,39 @@ void reload_tool_number(int toolno) {
         }
     }
 }
+
+
+int read_hal_inputs(void)
+{
+    int oldval, retval = 0;
+
+    oldval = emcioStatus.aux.estop;
+
+    if ( *(iocontrol_data->emc_enable_in)==0) //check for estop from HW
+	emcioStatus.aux.estop = 1;
+    else
+	emcioStatus.aux.estop = 0;
+
+    if (oldval != emcioStatus.aux.estop) {
+	retval = 1;
+    }
+
+
+    oldval = emcioStatus.lube.level;
+    emcioStatus.lube.level = *(iocontrol_data->lube_level);	//check for lube_level from HW
+    if (oldval != emcioStatus.lube.level) {
+	retval = 1;
+    }
+
+/*    if ( *(iocontrol_data->tool_initial_number)!= *(iocontrol_data->tool_number)) {
+	    rtapi_print( "EMC_TOOL_MISSmatch\n");
+	    reload_tool_number(*(iocontrol_data->tool_initial_number));
+    }*/
+    return retval;
+}
+
+
+
 
 
 /********************************************************************
@@ -629,7 +650,7 @@ static void do_hal_exit(void) {
 ********************************************************************/
 int main(int argc, char *argv[])
 {
-    int t, tool_status;
+    int t, tool_status, init_flag=0;
     NMLTYPE type;
 
     for (t = 1; t < argc; t++) {
@@ -706,10 +727,11 @@ int main(int argc, char *argv[])
     /* set status values to 'normal' */
     emcioStatus.aux.estop = 1; //estop=1 means to emc that ESTOP condition is met
     emcioStatus.tool.pocketPrepped = -1;
+    rtapi_print( "TOOL INIT current=%d\n", *(iocontrol_data->tool_initial_number));
     if (random_toolchanger) {
-        emcioStatus.tool.toolInSpindle = emcioStatus.tool.toolTable[0].toolno;
+        emcioStatus.tool.toolInSpindle = emcioStatus.tool.toolTable[*(iocontrol_data->tool_initial_number)].toolno;
     } else {
-        emcioStatus.tool.toolInSpindle = 0;
+        emcioStatus.tool.toolInSpindle = *(iocontrol_data->tool_initial_number);
     }
     emcioStatus.coolant.mist = 0;
     emcioStatus.coolant.flood = 0;
@@ -718,6 +740,9 @@ int main(int argc, char *argv[])
     *(iocontrol_data->tool_number) = emcioStatus.tool.toolInSpindle;
 
     while (!done) {
+
+    if (init_flag==1){
+rtapi_print( "************ read %d\n", init_flag);
 	// check for inputs from HAL (updates emcioStatus)
 	// returns 1 if any of the HAL pins changed from the last time we checked
 	/* if an external ESTOP is activated (or another hal-pin has changed)
@@ -730,7 +755,7 @@ int main(int argc, char *argv[])
 	    emcioStatus.heartbeat++;
 	    emcioStatusBuffer->write(&emcioStatus);
 	}
-	;
+
 	if ( (tool_status = read_tool_inputs() ) > 0) { // in case of tool prep (or change) update, we only need to change the state (from RCS_EXEC
 	    emcioStatus.command_type = EMC_IO_STAT_TYPE; // to RCS_DONE, no need for different serial_number
 	    emcioStatus.echo_serial_number =
@@ -738,6 +763,7 @@ int main(int argc, char *argv[])
 	    emcioStatus.heartbeat++;
 	    emcioStatusBuffer->write(&emcioStatus);
 	}
+    }else{rtapi_print( "************no read \n");}
 
 	/* read NML, run commands */
 	if (-1 == emcioCommandBuffer->read()) {
@@ -746,7 +772,7 @@ int main(int argc, char *argv[])
 	    /* and repeat */
 	    continue;
 	}
-
+        rtapi_print( "************EMC_  IO command before: %d..%d %d\n",emcioCommand->type,emcioCommand->serial_number,emcioStatus.echo_serial_number );
 	if (0 == emcioCommand ||	// bad command pointer
 	    0 == emcioCommand->type ||	// bad command type
 	    emcioCommand->serial_number == emcioStatus.echo_serial_number) {	// command already finished
@@ -758,21 +784,25 @@ int main(int argc, char *argv[])
 
 	type = emcioCommand->type;
 	emcioStatus.status = RCS_DONE;
-
+        rtapi_print( "************EMC_  IO command: %d\n",type);
 	switch (type) {
 	case 0:
 	    break;
 
 	case EMC_IO_INIT_TYPE:
+    rtapi_print( "************EMC_HAL_INIT\n");
 	    rtapi_print_msg(RTAPI_MSG_DBG, "EMC_IO_INIT\n");
 	    hal_init_pins();
 	    break;
 
 	case EMC_TOOL_INIT_TYPE:
-	    rtapi_print_msg(RTAPI_MSG_DBG, "EMC_TOOL_INIT\n");
+        rtapi_print( "************EMC_TOOL_INIT\n");
 	    loadToolTable(tool_table_file, emcioStatus.tool.toolTable,
 		    ttcomments, random_toolchanger);
-	    reload_tool_number(emcioStatus.tool.toolInSpindle);
+	    reload_tool_number(*(iocontrol_data->tool_initial_number));
+		emcioStatus.tool.toolInSpindle = *(iocontrol_data->tool_initial_number);
+		*(iocontrol_data->tool_number) = emcioStatus.tool.toolInSpindle; //likewise in HAL
+        init_flag = 1;
 	    break;
 
 	case EMC_TOOL_HALT_TYPE:
