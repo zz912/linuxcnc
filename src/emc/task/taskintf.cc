@@ -1494,7 +1494,14 @@ int emcTrajRigidTap(EmcPose pos, double vel, double ini_maxvel, double acc, doub
 
 int emcTrajSetCodeStatus(double fcode)
 {
-return 0;
+    if (fcode < 0.0) {
+	fcode = 0.0;
+    }
+
+    emcmotCommand.command = EMCMOT_CODE_STATUS;
+    emcmotCommand.fcode = fcode;
+
+    return usrmotWriteEmcmotCommand(&emcmotCommand);
 }
 
 static int last_id = 0;

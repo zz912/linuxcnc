@@ -157,6 +157,7 @@ extern "C" {
         EMCMOT_SET_OFFSET, /* set tool offsets */
         EMCMOT_SET_MAX_FEED_OVERRIDE,
         EMCMOT_SETUP_ARC_BLENDS,
+	EMCMOT_CODE_STATUS, /* Gcode fcode status*/
 
 	EMCMOT_SET_PROBE_ERR_INHIBIT,
 	EMCMOT_ENABLE_WATCHDOG,         /* enable watchdog sound, parport */
@@ -274,6 +275,7 @@ extern "C" {
         double maxFeedScale;
 	double ext_offset_vel;	/* velocity for an external axis offset */
 	double ext_offset_acc;	/* acceleration for an external axis offset */
+	double fcode;
     } emcmot_command_t;
 
 /*! \todo FIXME - these packed bits might be replaced with chars
