@@ -387,6 +387,9 @@ int emcFormat(NMLTYPE type, void *buffer, CMS * cms)
     case EMC_TRAJ_PROBE_TYPE:
 	((EMC_TRAJ_PROBE *) buffer)->update(cms);
 	break;
+    case EMC_TRAJ_SET_CODE_STATUS_TYPE:
+	((EMC_TRAJ_SET_CODE_STATUS *) buffer)->update(cms);
+	break;
     case EMC_AUX_INPUT_WAIT_TYPE:
 	((EMC_AUX_INPUT_WAIT *) buffer)->update(cms);
 	break;
@@ -705,6 +708,8 @@ const char *emc_symbol_lookup(uint32_t type)
 	return "EMC_TRAJ_PAUSE";
     case EMC_TRAJ_PROBE_TYPE:
 	return "EMC_TRAJ_PROBE";
+    case EMC_TRAJ_SET_CODE_STATUS_TYPE:
+	return "EMC_TRAJ_SET_CODE_STATUS";
     case EMC_AUX_INPUT_WAIT_TYPE:
 	return "EMC_AUX_INPUT_WAIT";
     case EMC_TRAJ_RIGID_TAP_TYPE:
@@ -2584,6 +2589,7 @@ void EMC_MOTION_STAT::update(CMS * cms)
     for (int i_joint = 0; i_joint < EMCMOT_MAX_JOINTS; i_joint++)
 	joint[i_joint].update(cms);
     cms->update(debug);
+    cms->update(fcode);
 
     // spindle.update(cms); //FIXME - is this needed ? Let's see. andypugh 13/6/16
 
@@ -2841,6 +2847,14 @@ void EMC_TRAJ_PROBE::update(CMS * cms)
     cms->update(ini_maxvel);
     cms->update(acc);
     cms->update(probe_type);
+}
+
+void EMC_TRAJ_SET_CODE_STATUS::update(CMS * cms)
+{
+
+    EMC_TRAJ_CMD_MSG::update(cms);
+    cms->update(fcode);
+
 }
 
 /*

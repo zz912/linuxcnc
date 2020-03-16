@@ -993,6 +993,18 @@ class EMC_TRAJ_PROBE:public EMC_TRAJ_CMD_MSG {
     unsigned char probe_type;
 };
 
+class EMC_TRAJ_SET_CODE_STATUS:public EMC_TRAJ_CMD_MSG {
+  public:
+    EMC_TRAJ_SET_CODE_STATUS():EMC_TRAJ_CMD_MSG(EMC_TRAJ_SET_CODE_STATUS_TYPE,
+				      sizeof(EMC_TRAJ_SET_CODE_STATUS)) {
+    };
+
+    // For internal NML/CMS use only.
+    void update(CMS * cms);
+
+    double fcode;
+};
+
 class EMC_TRAJ_RIGID_TAP:public EMC_TRAJ_CMD_MSG {
   public:
     EMC_TRAJ_RIGID_TAP():EMC_TRAJ_CMD_MSG(EMC_TRAJ_RIGID_TAP_TYPE,
@@ -1222,6 +1234,7 @@ class EMC_MOTION_STAT:public EMC_MOTION_STAT_MSG {
     int debug;			// copy of EMC_DEBUG global
     int on_soft_limit;
     int external_offsets_applied;
+    double fcode;
     EmcPose eoffset_pose;
     int numExtraJoints;
 };

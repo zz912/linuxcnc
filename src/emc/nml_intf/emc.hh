@@ -132,6 +132,7 @@ struct PM_CARTESIAN;
 #define EMC_TRAJ_SET_SO_ENABLE_TYPE                  ((NMLTYPE) 235)
 #define EMC_TRAJ_SET_FH_ENABLE_TYPE                  ((NMLTYPE) 236)
 #define EMC_TRAJ_RIGID_TAP_TYPE                      ((NMLTYPE) 237)
+#define EMC_TRAJ_SET_CODE_STATUS_TYPE                ((NMLTYPE) 239)
 
 #define EMC_TRAJ_STAT_TYPE                           ((NMLTYPE) 299)
 
@@ -404,8 +405,10 @@ extern int emcTrajSetSpindleScale(int spindle, double scale);
 extern int emcTrajSetSOEnable(unsigned char mode);   //spindle speed override enable
 extern int emcTrajSetAFEnable(unsigned char enable); //adaptive feed enable
 extern int emcTrajSetMotionId(int id);
+extern int emcTrajSetCodeStatus(double fcode);
 extern double emcTrajGetLinearUnits();
 extern double emcTrajGetAngularUnits();
+
 
 extern int emcTrajInit();
 extern int emcTrajHalt();
