@@ -689,6 +689,9 @@ int main(int argc, char* argv[]) {
                           c->probe_home_err_inhibit);
                 break;
 
+            case EMCMOT_CODE_STATUS:
+                log_print("SET F CODE: %.6f\n", c->fcode);
+                break;
 
             default:
                 log_print("ERROR: unknown command %d\n", c->command);
