@@ -1254,7 +1254,7 @@ label $_tabs_mdi.gcodel
 setup_widget_accel $_tabs_mdi.gcodel [_ "Active G-Codes:"]
 
 text $_tabs_mdi.gcodes \
-	-height 2 \
+	-height 3 \
 	-width 40 \
 	-undo 0 \
 	-wrap word
