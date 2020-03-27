@@ -430,7 +430,7 @@ class emc_status:
             for i in (temp):
                 active_codes.append("M"+i)
             self.data.active_mcodes = active_codes
-            feed_str = "%.3f" % self.emcstat.settings[1]
+            feed_str = "%.3f" % self.emcstat.current_fcode
             if feed_str.endswith(".000"): feed_str = feed_str[:-4]
             self.data.active_feed_command = feed_str
             self.data.active_spindle_command = "%.0f" % self.emcstat.settings[2]

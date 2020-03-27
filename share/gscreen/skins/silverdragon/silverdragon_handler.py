@@ -1214,22 +1214,22 @@ class HandlerClass:
         return (use_shortcuts)
 
     def _update_vel(self):
-        real_feed = float(self.stat.settings[1] * self.stat.feedrate)
+        real_feed = float(self.stat.current_fcode * self.stat.feedrate)
         if self.stat.linear_units == _MM: # metric
             self.widgets.lbl_velocity.set_text("{0:d}".format(int(self.stat.current_vel * 60.0 * self.factor)))
             if "G95" in self.data.active_gcodes:
-                feed_str = "{0:d}".format(int(self.stat.settings[1]))
+                feed_str = "{0:d}".format(int(self.stat.current_fcode))
                 real_feed_str = "{0:.2f}".format(real_feed)
             else:
-                feed_str = "{0:d}".format(int(self.stat.settings[1]))
+                feed_str = "{0:d}".format(int(self.stat.current_fcode))
                 real_feed_str = "{0:d}".format(int(real_feed))
         else: # imperial
             self.widgets.lbl_velocity.set_text("{0:.2f}".format(self.stat.current_vel * 60.0 * self.factor))
             if "G95" in self.data.active_gcodes:
-                feed_str = "{0:.4f}".format(self.stat.settings[1])
+                feed_str = "{0:.4f}".format(self.stat.current_fcode)
                 real_feed_str = "{0:.4f}".format(real_feed)
             else:
-                feed_str = "{0:.3f}".format(self.stat.settings[1])
+                feed_str = "{0:.3f}".format(self.stat.current_fcode)
                 real_feed_str = "{0:.3f}".format(real_feed)
 
     def set_motion_mode(self, state):
