@@ -3175,22 +3175,22 @@ class gmoccapy(object):
     # Update the velocity labels
     def _update_vel(self):
         # self.stat.program_units will return 1 for inch, 2 for mm and 3 for cm
-        real_feed = float(self.stat.settings[1] * self.stat.feedrate)
+        real_feed = float(self.stat.current_fcode * self.stat.feedrate)
         if self.stat.program_units != 1:
             self.widgets.lbl_current_vel.set_text("{0:d}".format(int(self.stat.current_vel * 60.0 * self.faktor)))
             if "G95" in self.active_gcodes:
-                feed_str = "{0:d}".format(int(self.stat.settings[1]))
+                feed_str = "{0:d}".format(int(self.stat.current_fcode))
                 real_feed_str = "F  {0:.2f}".format(real_feed)
             else:
-                feed_str = "{0:d}".format(int(self.stat.settings[1]))
+                feed_str = "{0:d}".format(int(self.stat.current_fcode))
                 real_feed_str = "F  {0:d}".format(int(real_feed))
         else:
             self.widgets.lbl_current_vel.set_text("{0:.2f}".format(self.stat.current_vel * 60.0 * self.faktor))
             if "G95" in self.active_gcodes:
-                feed_str = "{0:.4f}".format(self.stat.settings[1])
+                feed_str = "{0:.4f}".format(self.stat.current_fcode)
                 real_feed_str = "F {0:.4f}".format(real_feed)
             else:
-                feed_str = "{0:.3f}".format(self.stat.settings[1])
+                feed_str = "{0:.3f}".format(self.stat.current_fcode)
                 real_feed_str = "F {0:.3f}".format(real_feed)
 
         # converting 0.0 to string brings nothing, so the string is empty
