@@ -1429,6 +1429,13 @@ def set_hal_jogincrement():
     comp['jog.increment'] = distance
 
 def jogspeed_listbox_change(dummy, value):
+    # stop any jogging if listbox is changed
+    jjogmode = get_jog_mode()
+    for jnum in range(num_joints):
+        jog_after[jnum] = None
+        jogging[jnum] = 0
+        jog(linuxcnc.JOG_STOP, jjogmode, jnum)
+
     global jogincr_index_last
     # pdb.set_trace()
     # FJ: curselection is not always up to date here, so 

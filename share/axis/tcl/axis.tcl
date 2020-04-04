@@ -891,29 +891,27 @@ frame $_tabs_manual.jogf
 frame $_tabs_manual.jogf.jog
 
 button $_tabs_manual.jogf.jog.jogminus \
-	-command {if {![is_continuous]} {jog_minus 1}} \
 	-padx 0 \
 	-pady 0 \
 	-width 2 \
         -text -
 bind $_tabs_manual.jogf.jog.jogminus <Button-1> {
-    if {[is_continuous]} { jog_minus }
+jog_minus
 }
 bind $_tabs_manual.jogf.jog.jogminus <ButtonRelease-1> {
-    if {[is_continuous]} { jog_stop }
+jog_stop
 }
 
 button $_tabs_manual.jogf.jog.jogplus \
-	-command {if {![is_continuous]} {jog_plus 1}} \
 	-padx 0 \
 	-pady 0 \
 	-width 2 \
         -text +
 bind $_tabs_manual.jogf.jog.jogplus <Button-1> {
-    if {[is_continuous]} { jog_plus }
+jog_plus
 }
 bind $_tabs_manual.jogf.jog.jogplus <ButtonRelease-1> {
-    if {[is_continuous]} { jog_stop }
+jog_stop
 }
 
 combobox $_tabs_manual.jogf.jog.jogincr \
