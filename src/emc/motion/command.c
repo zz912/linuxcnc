@@ -65,6 +65,7 @@
 #include "rtapi_math.h"
 #include "motion_types.h"
 #include "homing.h"
+#include "dryrun.h"
 
 #include "tp_debug.h"
 
@@ -328,7 +329,7 @@ void emcmotSetRotaryUnlock(int jnum, int unlock) {
         jnum,1<<jnum);
         return;
     }
-    *(emcmot_hal_data->joint[jnum].unlock) = unlock;
+    if (!dryrun_active()) {*(emcmot_hal_data->joint[jnum].unlock) = unlock;}
 }
 
 int emcmotGetRotaryIsUnlocked(int jnum) {
@@ -360,9 +361,9 @@ void emcmotDioWrite(int index, char value)
 	rtapi_print_msg(RTAPI_MSG_ERR, "ERROR: index out of range, %d not in [0..%d] (increase num_dio/EMCMOT_MAX_DIO=%d)\n", index, emcmotConfig->numDIO, EMCMOT_MAX_DIO);
     } else {
 	if (value != 0) {
-	    *(emcmot_hal_data->synch_do[index])=1;
+	    if (!dryrun_active()) {*(emcmot_hal_data->synch_do[index])=1;}
 	} else {
-	    *(emcmot_hal_data->synch_do[index])=0;
+	    if (!dryrun_active()) {*(emcmot_hal_data->synch_do[index])=0;}
 	}
     }
 }
@@ -380,7 +381,7 @@ void emcmotAioWrite(int index, double value)
     if ((index >= emcmotConfig->numAIO) || (index < 0)) {
 	rtapi_print_msg(RTAPI_MSG_ERR, "ERROR: index out of range, %d not in [0..%d] (increase num_aio/EMCMOT_MAX_AIO=%d)\n", index, emcmotConfig->numAIO, EMCMOT_MAX_AIO);
     } else {
-        *(emcmot_hal_data->analog_output[index]) = value;
+        if (!dryrun_active()) {*(emcmot_hal_data->analog_output[index]) = value;}
     }
 }
 
@@ -415,6 +416,7 @@ void emcmotCommandHandler(void *arg, long period)
     char issue_atspeed = 0;
     int abort = 0;
     char* emsg = "";
+    spindle_hal_t *spindle_pin;
 
     /* check for split read */
     if (emcmotCommand->head != emcmotCommand->tail) {
@@ -1767,13 +1769,14 @@ void emcmotCommandHandler(void *arg, long period)
             s1 = motion_num_spindles - 1;
         }
         for (n = s0; n<=s1; n++){
+	        spindle_pin = &(emcmot_hal_data->spindle[n]);
 
-	        if (*(emcmot_hal_data->spindle[n].spindle_orient))
-	    	rtapi_print_msg(RTAPI_MSG_DBG, "SPINDLE_ORIENT cancelled by SPINDLE_ON\n");
-	        if (*(emcmot_hal_data->spindle[n].spindle_locked))
-		    rtapi_print_msg(RTAPI_MSG_DBG, "spindle-locked cleared by SPINDLE_ON\n");
-	        *(emcmot_hal_data->spindle[n].spindle_locked) = 0;
-	        *(emcmot_hal_data->spindle[n].spindle_orient) = 0;
+	        if (*(spindle_pin->spindle_orient))
+	            rtapi_print_msg(RTAPI_MSG_DBG, "SPINDLE_ORIENT cancelled by SPINDLE_ON\n");
+	        if (*(spindle_pin->spindle_locked))
+	            rtapi_print_msg(RTAPI_MSG_DBG, "spindle-locked cleared by SPINDLE_ON\n");
+	        *(spindle_pin->spindle_locked) = 0;
+	        *(spindle_pin->spindle_orient) = 0;
 	        emcmotStatus->spindle_status[n].orient_state = EMCMOT_ORIENT_NONE;
 
 	        /* if (emcmotStatus->spindle.orient) { */
@@ -1815,17 +1818,18 @@ void emcmotCommandHandler(void *arg, long period)
             s1 = motion_num_spindles - 1;
         }
         for (n = s0; n<=s1; n++){
+	        spindle_pin = &(emcmot_hal_data->spindle[n]);
 
 	        emcmotStatus->spindle_status[n].speed = 0;
 	        emcmotStatus->spindle_status[n].direction = 0;
 	        emcmotStatus->spindle_status[n].brake = 1; // engage brake
-	        if (*(emcmot_hal_data->spindle[n].spindle_orient))
+	        if (*(spindle_pin->spindle_orient))
 		    rtapi_print_msg(RTAPI_MSG_DBG, "SPINDLE_ORIENT cancelled by SPINDLE_OFF");
-	        if (*(emcmot_hal_data->spindle[n].spindle_locked)){
+	        if (*(spindle_pin->spindle_locked)){
 		    rtapi_print_msg(RTAPI_MSG_DBG, "spindle-locked cleared by SPINDLE_OFF");
-	            *(emcmot_hal_data->spindle[n].spindle_locked) = 0;
-            }
-	        *(emcmot_hal_data->spindle[n].spindle_orient) = 0;
+	            *(spindle_pin->spindle_locked) = 0;
+	        }
+	        *(spindle_pin->spindle_orient) = 0;
 	        emcmotStatus->spindle_status[n].orient_state = EMCMOT_ORIENT_NONE;
         }
 	    break;
@@ -1845,12 +1849,13 @@ void emcmotCommandHandler(void *arg, long period)
             s1 = motion_num_spindles - 1;
         }
         for (n = s0; n<=s1; n++){
+	        spindle_pin = &(emcmot_hal_data->spindle[n]);
 
 	        if (n > emcmotConfig->numSpindles){
                 rtapi_print_msg(RTAPI_MSG_ERR, "spindle number <%d> too high in M19",n);
                 break;
 	        }
-	        if (*(emcmot_hal_data->spindle[n].spindle_orient)) {
+	        if (*(spindle_pin->spindle_orient)) {
 		    rtapi_print_msg(RTAPI_MSG_DBG, "orient already in progress");
 
 		    // mah:FIXME unsure wether this is ok or an error
@@ -1865,10 +1870,10 @@ void emcmotCommandHandler(void *arg, long period)
 	        // so far like spindle stop, except opening brake
 	        emcmotStatus->spindle_status[n].brake = 0; // open brake
 
-	        *(emcmot_hal_data->spindle[n].spindle_orient_angle) = emcmotCommand->orientation;
-	        *(emcmot_hal_data->spindle[n].spindle_orient_mode) = emcmotCommand->mode;
-	        *(emcmot_hal_data->spindle[n].spindle_locked) = 0;
-	        *(emcmot_hal_data->spindle[n].spindle_orient) = 1;
+	        *(spindle_pin->spindle_orient_angle) = emcmotCommand->orientation;
+	        *(spindle_pin->spindle_orient_mode) = emcmotCommand->mode;
+	        *(spindle_pin->spindle_locked) = 0;
+	        *(spindle_pin->spindle_orient) = 1;
 
 	        // mirror in spindle status
 	        emcmotStatus->spindle_status[n].orient_fault = 0; // this pin read during spindle-orient == 1
