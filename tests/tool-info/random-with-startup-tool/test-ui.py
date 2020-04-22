@@ -97,9 +97,16 @@ def verify_io_pins(state, tool_number, tool_prep_number, tool_prep_pocket):
 
 def verify_status_buffer(state, tool_in_spindle):
     s.poll()
-    if s.tool_in_spindle != tool_in_spindle:
-        print "state=%s, expected status.tool_in_spindle=%d, got %d" % (state, tool_in_spindle, s.tool_in_spindle)
-        sys.exit(1)
+
+# for testing unexpected failures:
+    ct=0
+    while ct < 50:
+        if s.tool_in_spindle != tool_in_spindle:
+            print "???state=%s, expected status.tool_in_spindle=%d, got %d" % (state, tool_in_spindle, s.tool_in_spindle)
+            time.sleep(0.01)
+            ct +=1
+        else: break
+    if ct>0: sys.exit(1)
 
     print "state='%s', got expected status buffer fields:" % state
     print "    tool_in_spindle=%d" % tool_in_spindle
