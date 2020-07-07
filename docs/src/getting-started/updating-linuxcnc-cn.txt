@@ -1,4 +1,4 @@
-[[cha:updating-linuxcnc]]
+﻿[[cha:updating-linuxcnc]]
 
 = 更新LinuxCNC
 
@@ -1078,4 +1078,3 @@ sim_home_switch：为index-enable添加了I/O引脚
 sim/configs/axis/axis_9axis：演示模拟编码器索引
 
 // vim: set syntax=asciidoc:
-                                                                               
