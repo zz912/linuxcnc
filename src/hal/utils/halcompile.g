@@ -16,7 +16,6 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 from __future__ import print_function
-
 %%
 parser Hal:
     ignore: "//.*"
@@ -51,6 +50,7 @@ parser Hal:
       | "description" String ";"   {{ description(String) }}
       | "license" String ";"   {{ license(String) }}
       | "author" String ";"   {{ author(String) }}
+      | "languages" String ";" {{ languages(String) }}
       | "include" Header ";"   {{ include(Header) }}
       | "modparam" NAME {{ NAME1=NAME; }} NAME OptSAssign OptString ";" {{ modparam(NAME1, NAME, OptSAssign, OptString) }}
 
@@ -120,6 +120,7 @@ mp_decl_map = {'int': 'RTAPI_MP_INT', 'dummy': None}
 # HAL pins & parameters, because comp adds #defines with the names of HAL
 # pins & params.
 reserved_names = [ 'comp_id', 'fperiod', 'rtapi_app_main', 'rtapi_app_exit', 'extra_setup', 'extra_cleanup' ]
+langlist = [""]
 
 def _parse(rule, text, filename=None):
     global P, S
@@ -181,6 +182,10 @@ def description(doc):
 
 def license(doc):
     docs.append(('license', doc));
+
+def languages(doc):
+    langlist = [""] + doc.replace(" ", "").split(",")
+    print(langlist)
 
 def author(doc):
     docs.append(('author', doc));
@@ -834,6 +839,24 @@ def finddocs(section=None, name=None):
                 (name == None or name == item[1])):
                     yield item
 
+# This is a proof of concept, I think that it should be handled in the
+# YAPPS parser, returning a dictionary of strings for each language
+
+def getlang(doc, lang):
+    if lang != "":
+        regex = "[\s\S]*_%s\s*\"([\s\S]*?)($|_)" % lang
+        res = re.search(regex, doc)
+        if res != None: # found the required translation
+            print(res.group(1))
+            return res.group(1)
+    regex = "([\s\S]*?)[$\"]" # look for default docs
+    res = re.search(regex, doc)
+    if res != None:
+        print(res.group(1))
+        return res.group(1)
+    return doc # if all else fails, just return the original string
+
+
 def to_hal_man_unnumbered(s):
     s = "%s.%s" % (comp_name, s)
     s = s.replace("_", "-")
@@ -856,7 +879,7 @@ def to_hal_man(s):
     # s = s.replace("-", "\\-")
     return s
 
-def document(filename, outfilename):
+def document(filename, outfilename, lang=""):
     if outfilename is None:
         outfilename = os.path.splitext(filename)[0] + ".9"
 
@@ -878,10 +901,11 @@ def document(filename, outfilename):
     print(".SH NAME\n", file=f)
     doc = finddoc('component')    
     if doc and doc[2]:
-        if '\n' in doc[2]:
-            firstline, rest = doc[2].split('\n', 1)
+        temp = getlang(doc[2],lang)
+        if '\n' in temp:
+            firstline, rest = temp.split('\n', 1)
         else:
-            firstline = doc[2]
+            firstline = temp
             rest = ''
         print("%s \\- %s" % (doc[1], firstline), file=f)
     else:
@@ -944,11 +968,12 @@ def document(filename, outfilename):
                 print(" (requires a floating-point thread)", file=f)
             else:
                 print("", file=f)
-            print(doc, file=f)
+            print(getlang(doc,lang), file=f)
 
     lead = ".TP"
     print(".SH PINS", file=f)
     for _, name, type, array, dir, doc, value, personality in finddocs('pin'):
+        doc = getlang(doc, lang)
         print(lead, file=f)
         print(".B %s\\fR" % to_hal_man(name), end=' ', file=f)
         print(type, dir, end=' ', file=f)
@@ -1075,7 +1100,7 @@ def usage(exitval=0):
     print("""%(name)s: Build, compile, and install LinuxCNC HAL components
 
 Usage:
-           %(name)s [--compile|--preprocess|--document|--view-doc] compfile...
+           %(name)s [--compile|--preprocess|--document|--view-doc=xx] compfile...
     [sudo] %(name)s [--install|--install-doc] compfile...
            %(name)s --compile --userspace cfile...
     [sudo] %(name)s --install --userspace cfile...
@@ -1096,12 +1121,13 @@ def main():
     require_unix_line_endings = False
     mode = PREPROCESS
     outfile = None
+    lang = None
     userspace = False
     try:
         opts, args = getopt.getopt(sys.argv[1:], "Uluijcpdo:h?P:",
                            ['unix', 'install', 'compile', 'preprocess', 'outfile=',
                             'document', 'help', 'userspace', 'install-doc',
-                            'view-doc', 'require-license', 'print-modinc',
+                            'view-doc=', 'require-license', 'print-modinc',
                             'personalities='])
     except getopt.GetoptError:
         usage(1)
@@ -1123,6 +1149,7 @@ def main():
             mode = INSTALLDOC
         if k in ("-j", "--view-doc"):
             mode = VIEWDOC
+            lang = v
         if k in ("--print-modinc",):
             mode = MODINC
         if k in ("-l", "--require-license"):
@@ -1159,17 +1186,20 @@ def main():
                 tempdir = tempfile.mkdtemp()
                 try:
                     outfile = os.path.join(tempdir, basename + ".9")
-                    document(f, outfile)
+                    document(f, outfile, lang)
                     os.spawnvp(os.P_WAIT, "man", ["man", outfile])
                 finally:
                     shutil.rmtree(tempdir)
             elif f.endswith(".comp") and mode == INSTALLDOC:
-                manpath = os.path.join(BASE, "share/man/man9")
-                if not os.path.isdir(manpath):
-                    manpath = os.path.join(BASE, "docs/man/man9")
-                outfile = os.path.join(manpath, basename + ".9")
-                print("INSTALLDOC", outfile)
-                document(f, outfile)            
+                print(langlist)
+                for lang in langlist:
+                    print("documenting language %s \n" % lang)
+                    manpath = os.path.join(BASE, "share/man/%s/man9" % lang)
+                    if not os.path.isdir(manpath):
+                        manpath = os.path.join(BASE, "docs/man/%s/man9" % lang)
+                    outfile = os.path.join(manpath, basename + ".9")
+                    print("INSTALLDOC", outfile)
+                    document(f, outfile,lang)
             elif f.endswith(".comp"):
                 process(f, mode, outfile)
             elif f.endswith(".py") and mode == INSTALL:

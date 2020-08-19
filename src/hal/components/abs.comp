@@ -32,7 +32,6 @@ pin out bit is_positive """TRUE if input is positive, FALSE if input is 0 or neg
 pin out bit is_negative """TRUE if input is negative, FALSE if input is 0 or positive"
                     _es "VERDADERO si la entrada es negativa, FALSO si la entrada es 0 o positiva"
                     _fr "TRUE si l'entrée est négative, FALSE si l'entrée est 0 ou positive""";
-languages "es, fr";
 function _;
 license "GPL";
 ;;
