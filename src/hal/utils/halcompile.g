@@ -50,7 +50,6 @@ parser Hal:
       | "description" String ";"   {{ description(String) }}
       | "license" String ";"   {{ license(String) }}
       | "author" String ";"   {{ author(String) }}
-      | "languages" String ";" {{ languages(String) }}
       | "include" Header ";"   {{ include(Header) }}
       | "modparam" NAME {{ NAME1=NAME; }} NAME OptSAssign OptString ";" {{ modparam(NAME1, NAME, OptSAssign, OptString) }}
 
@@ -182,10 +181,6 @@ def description(doc):
 
 def license(doc):
     docs.append(('license', doc));
-
-def languages(doc):
-    langlist = [""] + doc.replace(" ", "").split(",")
-    print(langlist)
 
 def author(doc):
     docs.append(('author', doc));
@@ -839,22 +834,26 @@ def finddocs(section=None, name=None):
                 (name == None or name == item[1])):
                     yield item
 
-# This is a proof of concept, I think that it should be handled in the
-# YAPPS parser, returning a dictionary of strings for each language
+# This is a proof of concept, I think that it should possibly be handled
+# in the YAPPS parser, returning a dictionary of strings for each language
 
 def getlang(doc, lang):
     if lang != "":
-        regex = "[\s\S]*_%s\s*\"([\s\S]*?)($|_)" % lang
+        regex = ":lang:\s*%s([\s\S]*?)(:lang|$)" % lang
         res = re.search(regex, doc)
         if res != None: # found the required translation
-            print(res.group(1))
             return res.group(1)
-    regex = "([\s\S]*?)[$\"]" # look for default docs
+    # Default search, so first look to see if there are any other languages
+    for res in re.finditer(":lang:\s*(\w\w)",doc):
+        if res.group(1) not in langlist:
+            langlist.append(res.group(1))
+    # Now look for default docs
+    regex = "([\s\S]*?)(:lang|$)" 
     res = re.search(regex, doc)
     if res != None:
-        print(res.group(1))
         return res.group(1)
-    return doc # if all else fails, just return the original string
+    # if all else fails, just return the original string
+    return doc
 
 
 def to_hal_man_unnumbered(s):
@@ -1181,7 +1180,11 @@ def main():
         try:
             basename = os.path.basename(os.path.splitext(f)[0])
             if f.endswith(".comp") and mode == DOCUMENT:
-                document(f, outfile)            
+                for lang in langlist:
+                    tempfile = outfile
+                    if tempfile and lang != "":
+                        tempfile = outfile.replace("man/man9", ("man/%s/man9" % lang))
+                    document(f, tempfile, lang)
             elif f.endswith(".comp") and mode == VIEWDOC:
                 tempdir = tempfile.mkdtemp()
                 try:
@@ -1191,7 +1194,6 @@ def main():
                 finally:
                     shutil.rmtree(tempdir)
             elif f.endswith(".comp") and mode == INSTALLDOC:
-                print(langlist)
                 for lang in langlist:
                     print("documenting language %s \n" % lang)
                     manpath = os.path.join(BASE, "share/man/%s/man9" % lang)

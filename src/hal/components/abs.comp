@@ -13,25 +13,24 @@
 //   You should have received a copy of the GNU General Public License
 //   along with this program; if not, write to the Free Software
 //   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-component abs """Compute the absolute value and sign of the input signal."
-            _es "Calcule el valor absoluto y el signo de la señal de entrada."
-            _fr "Calculer la valeur absolue et le signe du signal d'entrée.""";
-
-pin in float in """Analog input value"
-            _es "Valor de entrada analógica"
-            _fr "Valeur d'entrée analogique""";
-pin out float out """Analog output value, always positive"
-              _fr "Valeur de sortie analogique, toujours positive"
-              _es "Valor de salida analógica, siempre positivo""";
-pin out bit sign """Sign of input, false for positive, true for negative"
-             _es "Signo de entrada, falso para positivo, verdadero para negativo"
-             _fr "Signe d'entrée, faux pour positif, vrai pour négatif""" ;
-pin out bit is_positive """TRUE if input is positive, FALSE if input is 0 or negative"
-             _es "VERDADERO si la entrada es positiva, FALSO si la entrada es 0 o negativa"
-             _fr "TRUE si l'entrée est positive, FALSE si l'entrée est 0 ou négative""";
-pin out bit is_negative """TRUE if input is negative, FALSE if input is 0 or positive"
-                    _es "VERDADERO si la entrada es negativa, FALSO si la entrada es 0 o positiva"
-                    _fr "TRUE si l'entrée est négative, FALSE si l'entrée est 0 ou positive""";
+component abs """Compute the absolute value and sign of the input signal.
+       :lang: es Calcule el valor absoluto y el signo de la señal de entrada.
+        :lang:fr Calculer la valeur absolue et le signe du signal d'entrée.""";
+pin in float in """Analog input value
+         :lang:es Valor de entrada analógica"
+        :lang: fr Valeur d'entrée analogique""";
+pin out float out """Analog output value, always positive
+           :lang: fr Valeur de sortie analogique, toujours positive
+            :lang:es Valor de salida analógica, siempre positivo""";
+pin out bit sign """Sign of input, false for positive, true for negative
+          :lang:es "Signo de entrada, falso para positivo, verdadero para negativo
+         :lang: fr "Signe d'entrée, faux pour positif, vrai pour négatif""" ;
+pin out bit is_positive """TRUE if input is positive, FALSE if input is 0 or negative
+                  :lang:es VERDADERO si la entrada es positiva, FALSO si la entrada es 0 o negativa
+                  :lang: frTRUE si l'entrée est positive, FALSE si l'entrée est 0 ou négative""";
+pin out bit is_negative """TRUE if input is negative, FALSE if input is 0 or positive
+                  :lang:es VERDADERO si la entrada es negativa, FALSO si la entrada es 0 o positiva
+                 :lang: fr TRUE si l'entrée est négative, FALSE si l'entrée est 0 ou positive""";
 function _;
 license "GPL";
 ;;
