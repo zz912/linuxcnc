@@ -185,14 +185,28 @@ collide with reserved names or keywords (e.g., 'min') can be used.
 ----
 +
 or a Python-style "triple quoted" string, which 
-may include embedded newlines and quote characters, such as: 
+may include embedded newlines and quote characters. Strings may also
+include additional languages. Identify the language of the text that
+follows with :lang: and the 2-letter language code.
+There should be a default string with no language code at the start.
+Example:
 +
 ----
 """The effect of this parameter, also known as "the orb of zot",
-will require at least two paragraphs to explain.
+will require at least two paragraphs and three languages to explain.
 
 Hopefully these paragraphs have allowed you to understand "zot"
-better."""
+better.
+:lang:es El efecto de este parámetro, también conocido como "el orbe de zot",
+Requerirá al menos dos párrafos y tres idiomas para explicar.
+
+Con suerte, estos párrafos le han permitido comprender "zot"
+mejor.
+:lang:fr L'effet de ce paramètre, également appelé "l'orbe de zot",
+nécessitera au moins deux paragraphes et trois langues pour expliquer.
+
+J'espère que ces paragraphes vous ont permis de comprendre "zot"
+mieux."""
 ----
 +
 Or a string may be preceded by the literal character 'r', in which
