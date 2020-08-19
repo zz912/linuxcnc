@@ -571,6 +571,15 @@ man-format documentation can also be created from the information in
 the declaration section:
 
 ----
+halcompile --view-doc=es
+----
+
+Will build and display the Spanish version of the manpage, if the doc
+strings have been configured with suitable :lang: sections.
+Omit the language string to view the default (typically English) version
+of the doc.
+
+----
 halcompile --document rtexample.comp
 ----
 
