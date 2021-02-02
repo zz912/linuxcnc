@@ -1,0 +1,15 @@
+component rand;
+option userspace;
+
+pin in unsigned keycode;
+pin out float out;
+license "GPL"; // indicates GPL v2 or later
+;;
+#include <unistd.h>
+
+void user_mainloop(void) {
+    while(1) {
+        usleep(1000);
+        FOR_ALL_INSTS() out = drand48();
+    }
+}
