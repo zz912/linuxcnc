@@ -176,7 +176,7 @@ static_assert(sizeof(hal_shmfield<void>) == sizeof(int), "hal_shmfield size matc
 #define SHMPTR(arg) ((arg).get())
 #define SHMOFF(ptr) (hal_make_shmfield(ptr))
 #else
-#define SHMFIELD(type) int
+#define SHMFIELD(type) rtapi_intptr_t
 
 /* SHMPTR(offset) converts 'offset' to a void pointer. */
 #define SHMPTR(offset)  ( (void *)( hal_shmem_base + (offset) ) )
