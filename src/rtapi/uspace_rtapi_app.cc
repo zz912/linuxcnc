@@ -108,7 +108,7 @@ static void set_namef(const char *fmt, ...) {
     }
     va_end(ap);
 
-    int res = pthread_setname_np(pthread_self(), buf);
+    (void)pthread_setname_np(pthread_self(), buf);
     free(buf);
 }
 
