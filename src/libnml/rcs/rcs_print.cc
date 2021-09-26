@@ -47,7 +47,7 @@ long rcs_print_mode_flags = PRINT_RCS_ERRORS;
 FILE *rcs_print_file_stream = NULL;
 char rcs_print_file_name[80] = "rcs_out.txt";
 
-char last_error_bufs[4][100];
+char last_error_bufs[4][256];
 int error_bufs_initialized = 0;
 int last_error_buf_filled = 0;
 
@@ -300,15 +300,15 @@ int rcs_vprint(const char *_fmt, va_list _args, int save_string)
     }
     if (save_string) {
 	if (!error_bufs_initialized) {
-	    memset(last_error_bufs[0], 0, 100);
-	    memset(last_error_bufs[1], 0, 100);
-	    memset(last_error_bufs[2], 0, 100);
-	    memset(last_error_bufs[3], 0, 100);
+	    memset(last_error_bufs[0], 0, sizeof(last_error_bufs[0]));
+	    memset(last_error_bufs[1], 0, sizeof(last_error_bufs[1]));
+	    memset(last_error_bufs[2], 0, sizeof(last_error_bufs[2]));
+	    memset(last_error_bufs[3], 0, sizeof(last_error_bufs[3]));
 	    error_bufs_initialized = 1;
 	}
 	last_error_buf_filled++;
 	last_error_buf_filled %= 4;
-	strncpy(last_error_bufs[last_error_buf_filled], temp_string, 99);
+        snprintf(last_error_bufs[last_error_buf_filled], sizeof(last_error_bufs[last_error_buf_filled]), "%s", temp_string);
     }
     return (rcs_fputs(temp_string));
 }

@@ -199,7 +199,7 @@ extern "C" {
 extern int max_rcs_errors_to_print;
 extern int rcs_errors_printed;
 
-extern char last_error_bufs[4][100];
+extern char last_error_bufs[4][256];
 extern int last_error_buf_filled;
 
 #endif

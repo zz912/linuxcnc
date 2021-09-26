@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
 		    "%s: ini file not specified after -ini\n", argv[0]);
 		exit(1);
 	    } else {
-		strncpy(path, argv[t + 1], LINELEN);
+                snprintf(path, sizeof(path), "%s", argv[t+1]);
 		t++;		/* step over following arg */
 	    }
 	} else if (!strcmp(argv[t], "-var")) {
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
 		    "%s: variable name not specified after -var\n", argv[0]);
 		exit(1);
 	    } else {
-		strncpy(_variable, argv[t + 1], LINELEN);
+                snprintf(_variable, sizeof(_variable), "%s", argv[t+1]);
 		variable = _variable;
 		t++;		/* step over following arg */
 	    }
@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 		    "%s: section name not specified after -sec\n", argv[0]);
 		exit(1);
 	    } else {
-		strncpy(_section, argv[t + 1], LINELEN);
+                snprintf(_section, sizeof(_section), "%s", argv[t+1]);
 		section = _section;
 		t++;		/* step over following arg */
 	    }

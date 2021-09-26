@@ -315,9 +315,8 @@ IniFile::Find(const char *_tag, const char *_section, int _num, int *lineno)
            continue; // get next line to extend
         } else {
             if (extend_ct) {
-               strncpy(elinenext,line,newLinePos);
+                snprintf(elinenext, newLinePos, "%.*s", newLinePos, line);
                elinenext = elinenext + newLinePos;
-               *elinenext = 0;
             }
         }
         if (!extend_ct) {

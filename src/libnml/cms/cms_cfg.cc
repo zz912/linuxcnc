@@ -110,7 +110,7 @@ int load_nml_config_file(const char *file)
 
     CONFIG_FILE_INFO *info = new CONFIG_FILE_INFO();
     info->lines_list = new LinkedList();
-    strncpy(info->file_name, file, 80);
+    snprintf(info->file_name, sizeof(info->file_name), "%s", file);
     FILE *fp;
     fp = fopen(file, "r");
     if (fp == NULL) {
@@ -305,7 +305,7 @@ int cms_copy(CMS ** dest, CMS * src, int set_to_server, int set_to_master)
 extern char *get_buffer_line(const char *bufname, const char *filename)
 {
     int line_len, line_number;
-    char linebuf[CMS_CONFIG_LINELEN];	/* Temporary buffer for line from
+    static char linebuf[CMS_CONFIG_LINELEN];	/* Temporary buffer for line from
 					   file. */
     char *line = linebuf;
     FILE *fp = NULL;		/* FILE ptr to config file.  */
