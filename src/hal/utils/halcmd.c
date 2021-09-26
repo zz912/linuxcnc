@@ -679,7 +679,7 @@ static int strlimcpy(char **dest, char *src, int srclen, int *destspace) {
     if (*destspace < srclen) {
 	return -1;
     } else {
-	strncpy(*dest, src, srclen);
+	memcpy(*dest, src, srclen);
 	(*dest)[srclen] = '\0';
 	srclen = strlen(*dest);		/* use the actual number of bytes copied */
 	*destspace -= srclen;
