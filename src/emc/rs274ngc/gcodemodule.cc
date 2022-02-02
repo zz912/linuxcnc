@@ -998,11 +998,15 @@ static PyObject *rs274_arc_to_segments(PyObject *self, PyObject *args) {
 
     double theta1 = atan2(o[Y]-cy, o[X]-cx);
     double theta2 = atan2(n[Y]-cy, n[X]-cx);
+    double len = hypotf(o[X]-n[X], o[Y]-n[Y]);
 
-    if(rot < 0) {
-        while(theta2 - theta1 > -CIRCLE_FUZZ) theta2 -= 2*M_PI;
-    } else {
-        while(theta2 - theta1 < CIRCLE_FUZZ) theta2 += 2*M_PI;
+    /* Issue #1528 1/2/22 andypugh */
+    if(rot < 0) { // CW G2
+        if (theta1 < theta2) theta2 -= 2*M_PI;
+        if (fabs(theta2 - theta1) < CIRCLE_FUZZ && len < CART_FUZZ) rot -= 1;
+    } else { // CCW G3
+        if (theta1 > theta2) theta2 += 2*M_PI;
+        if (fabs(theta2 - theta1) < CIRCLE_FUZZ && len < CART_FUZZ) rot += 1;
     }
 
     // if multi-turn, add the right number of full circles

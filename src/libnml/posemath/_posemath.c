@@ -13,6 +13,8 @@
 *
 * Last change: 
 ********************************************************************/
+#define PM_PRINT_ERROR
+#define PM_DEBUG
 
 #if defined(PM_PRINT_ERROR) && defined(rtai)
 #undef PM_PRINT_ERROR
@@ -1820,8 +1822,9 @@ int pmCircleInit(PmCircle * const circle,
     if (d < 0.0) {
         circle->angle = PM_2_PI - circle->angle;
     }
-
-    if (circle->angle > -(CIRCLE_FUZZ) && circle->angle < (CIRCLE_FUZZ)) {
+    /* additional test for nearly-straight short arcs of very large radius becoming circles */
+    pmCartCartDisp(start, end, &d);
+    if (circle->angle > -(CIRCLE_FUZZ) && circle->angle < (CIRCLE_FUZZ) && d < CART_FUZZ) {
         circle->angle = PM_2_PI;
     }
 
