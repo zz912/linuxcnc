@@ -279,13 +279,16 @@ endif
 pdfdocs: svgs_made_from_dots $(PDF_TARGETS)
 htmldocs: svgs_made_from_dots .htmldoc-stamp checkref
 
-.htmldoc-stamp: copy_asciidoc_files $(HTML_TARGETS) .html-images-stamp
+.htmldoc-stamp: copy_asciidoc_files gen_complist $(HTML_TARGETS) .html-images-stamp
 	touch $@
 
 .PHONY: copy_asciidoc_files
 copy_asciidoc_files:
 	cp -f /etc/asciidoc/stylesheets/*.css $(DOC_DIR)/html
 	cp -f /etc/asciidoc/javascripts/*.js $(DOC_DIR)/html
+
+gen_complist:
+	python3 $(DOC_SRCDIR)/gen_complist.py
 
 checkref: checkref_en checkref_es checkref_fr checkref_hu checkref_vi checkref_zh_CN
 
