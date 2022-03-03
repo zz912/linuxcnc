@@ -268,7 +268,6 @@ DOTFILES=$(shell find . -name "*.dot") $(shell find ../docs/src/ -name "*.dot")
 .PHONY: svgs_made_from_dots
 svgs_made_from_dots: $(DOTFILES:.dot=.svg)
 
-docs: gen_complist
 ifeq ($(BUILD_DOCS_PDF),yes)
 docs: pdfdocs
 install-doc: install-doc-pdf
@@ -277,8 +276,8 @@ ifeq ($(BUILD_DOCS_HTML),yes)
 docs: htmldocs
 install-doc: install-doc-html
 endif
-pdfdocs: svgs_made_from_dots $(PDF_TARGETS)
-htmldocs: svgs_made_from_dots .htmldoc-stamp checkref
+pdfdocs: gen_complist svgs_made_from_dots $(PDF_TARGETS)
+htmldocs: gen_complist svgs_made_from_dots .htmldoc-stamp checkref
 
 .htmldoc-stamp: copy_asciidoc_files $(HTML_TARGETS) .html-images-stamp
 	touch $@
