@@ -1,7 +1,9 @@
 [[cha:hal-components]]
 :tab_options: cols="15s,85,0,0", frame="none", grid="none"
+:lang: en
 
-= HAL Components
+[[cha:hal-components]]
+= HAL Component List((("HAL Component List")))
 
 == Commands and Userspace Components
 
@@ -101,13 +103,14 @@ include::components_gen1.adoc[]
 Some of these will have expanded descriptions from the man pages. Some
 will have limited descriptions. All of the components have man pages.
 From this list you know what components exist and can use 'man n name' to
-get additional information. To view the information in the man page, in a 
-terminal window type: 
+get additional information. To view the information in the man page, in a
+terminal window type:
 
 ----
 man motion (or perhaps 'man 9 motion' if your system requires it.)
 ----
 
+[NOTE]
 See also the 'Man Pages' section of the link:../index.html[docs main page] or the
 link:../man/man9/[directory listing of man9].
 
@@ -143,6 +146,7 @@ link:../man/man9/[directory listing of man9].
 | link:../man/man9/xhc_hb04_util.9.html[xhc_hb04_util] |xhc-hb04 convenience utility||
 |=======================
 
+[[sec:Realtime-Components-flottant]]
 === Arithmetic and float-components
 [{tab_options}]
 |=======================
@@ -205,6 +209,7 @@ Limit its slew rate to less than maxv per second. Limit its second derivative to
 | link:../man/man9/gray2bin.9.html[gray2bin] |Convert a gray-code input to binary||
 |=======================
 
+[[sec:Realtime-Components-pilotes]]
 === Hardware Drivers
 [{tab_options}]
 |=======================
@@ -228,6 +233,7 @@ Limit its slew rate to less than maxv per second. Limit its second derivative to
 | link:../man/man9/thc.9.html[thc] | Torch Height Control using a Mesa THC card or any analog to velocity input ||
 |=======================
 
+[[sec:Realtime-Components-cinematiques]]
 === Kinematics
 [{tab_options}]
 |=======================
@@ -398,3 +404,4 @@ rtapi_task_start.3rtapi
 rtapi_task_wait.3rtapi
 ....
 
+// vim: set syntax=asciidoc:
