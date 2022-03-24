@@ -277,16 +277,23 @@ ifeq ($(BUILD_DOCS_HTML),yes)
 docs: htmldocs
 install-doc: install-doc-html
 endif
-pdfdocs: svgs_made_from_dots $(PDF_TARGETS)
-htmldocs: svgs_made_from_dots .htmldoc-stamp checkref
+pdfdocs: gen_complist svgs_made_from_dots $(PDF_TARGETS)
+htmldocs: gen_complist svgs_made_from_dots .htmldoc-stamp checkref
 
 .htmldoc-stamp: copy_asciidoc_files $(HTML_TARGETS) .html-images-stamp
 	touch $@
 
-.PHONY: copy_asciidoc_files
+.PHONY: copy_asciidoc_files gen_complist gen_complist_links
 copy_asciidoc_files:
 	cp -f /etc/asciidoc/stylesheets/*.css $(DOC_DIR)/html
 	cp -f /etc/asciidoc/javascripts/*.js $(DOC_DIR)/html
+
+gen_complist:
+	python3 $(DOC_SRCDIR)/gen_complist.py $(DOC_SRCDIR)/hal/components.adoc
+	touch $(DOC_SRCDIR)/hal/components.adoc
+
+gen_complist_links:
+	python3 $(DOC_SRCDIR)/gen_complist.py $(DOC_SRCDIR)/hal/components.adoc links
 
 checkref: checkref_en checkref_es checkref_fr checkref_hu checkref_vi checkref_zh_CN
 
