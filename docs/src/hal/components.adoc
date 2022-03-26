@@ -4,54 +4,86 @@
 [[cha:hal-components]]
 = HAL Component List((("HAL Component List")))
 
-== Commands and Userspace Components
+== Components
 
-All of the commands in the following list have man pages. 
+< explanation of the difference between a real-time and a userspace component >
+
+Most of the commands in the following list have man pages. 
 Some will have expanded descriptions, some will have limited descriptions. 
 From this list you know what components exist, 
-and you can use 'man n name' to get additional information. 
+and you can use 'man name' to get additional information.
 To view the information in the man page, in a terminal window type: 
 
 ----
-man axis (or perhaps 'man 1 axis' if your system requires it.)
+man axis (or perhaps 'man <n> axis' if your system requires it. n = 1 for userspace and 9 for realtime components)
 ----
 
-=== User Interface
+[[sec:realtime-components]]
+
+
+[NOTE]
+See also the 'Man Pages' section of the link:../index.html[docs main page] or the
+link:../man/[directory listing].
+
+
+=== User Interfaces (Userspace)
+==== Machine Control
 [{tab_options}]
 |=======================
-| link:../man/man1/5axisgui.1.html[5axisgui] |Vismach Virtual Machine GUI||
 | link:../man/man1/axis.1.html[axis] | AXIS LinuxCNC (The Enhanced Machine Controller) Graphical User Interface. ||
 | link:../man/man1/axis-remote.1.html[axis-remote] | AXIS Remote Interface. ||
+| link:../man/man1/gmoccapy.1.html[gmoccapy] |TOUCHY LinuxCNC Graphical User Interface||
+| link:../man/man1/gscreen.1.html[gscreen] |TOUCHY LinuxCNC Graphical User Interface||
+| link:../man/man1/ngcgui.1.html[ngcgui] |a framework for conversational G-code generation on the controller||
+| link:../man/man1/pyngcgui.1.html[pyngcgui] |python implementation of ngcgui||
+| link:../man/man1/touchy.1.html[touchy] |axis - TOUCHY LinuxCNC Graphical User Interface||
+| link:../man/man1/qtvcp.1.html[qtvcp] |QT based virtual control panels||
+|=======================
+
+==== Virtual Control Panels (VCP)
+[{tab_options}]
+|=======================
 | link:../man/man1/gladevcp.1.html[gladevcp] | Virtual Control Panel for LinuxCNC based on Glade, Gtk and HAL widgets. ||
 | link:../man/man1/gladevcp.1.html[gladevcp] | Displays Virtual Control Panels built with GTK/Glade. ||
 | link:../man/man1/gladevcp_demo.1.html[gladevcp_demo] |gladevcp - used by sample configs to deonstrate Glade Virtual_demo||
-| link:../man/man1/gmoccapy.1.html[gmoccapy] |TOUCHY LinuxCNC Graphical User Interface||
 | link:../man/man1/gremlin_view.1.html[gremlin_view] |G-code graphical preview||
-| link:../man/man1/gscreen.1.html[gscreen] |TOUCHY LinuxCNC Graphical User Interface||
-| link:../man/man1/halui.1.html[halui] | Observe HAL pins and command LinuxCNC through NML. ||
+| link:../man/man1/moveoff_gui.1.html[moveoff_gui] |a gui for the moveoff component||
+| link:../man/man1/pyui.1.html[pyui] |utility for panelui||
+| link:../man/man1/pyvcp.1.html[pyvcp] | Virtual Control Panel for LinuxCNC. ||
+| link:../man/man1/pyvcp_demo.1.html[pyvcp_demo] |Python Virtual Control Panel demonstration component||
+|=======================
+
+==== Vismach Virtual Machines
+[{tab_options}]
+|=======================
+| link:../man/man1/5axisgui.1.html[5axisgui] |Vismach Virtual Machine GUI||
 | link:../man/man1/hbmgui.1.html[hbmgui] |Vismach Virtual Machine GUI||
 | link:../man/man1/hexagui.1.html[hexagui] |Vismach Virtual Machine GUI||
 | link:../man/man1/lineardelta.1.html[lineardelta] |Vismach Virtual Machine GUI||
 | link:../man/man1/maho600gui.1.html[maho600gui] |hexagui - Vismach Virtual Machine GUI||
 | link:../man/man1/max5gui.1.html[max5gui] |hexagui - Vismach Virtual Machine GUI||
-| link:../man/man1/moveoff_gui.1.html[moveoff_gui] |a gui for the moveoff component||
-| link:../man/man1/ngcgui.1.html[ngcgui] |a framework for conversational G-code generation on the controller||
 | link:../man/man1/panelui.1.html[panelui] |short description||
 | link:../man/man1/puma560gui.1.html[puma560gui] |puma560agui - Vismach Virtual Machine GUI||
 | link:../man/man1/pumagui.1.html[pumagui] |Vismach Virtual Machine GUI||
-| link:../man/man1/pyngcgui.1.html[pyngcgui] |python implementation of ngcgui||
-| link:../man/man1/pyui.1.html[pyui] |utility for panelui||
-| link:../man/man1/pyvcp.1.html[pyvcp] | Virtual Control Panel for LinuxCNC. ||
-| link:../man/man1/pyvcp_demo.1.html[pyvcp_demo] |Python Virtual Control Panel demonstration component||
-| link:../man/man1/qtvcp.1.html[qtvcp] |QT based virtual control panels||
 | link:../man/man1/rotarydelta.1.html[rotarydelta] |Vismach Virtual Machine GUI||
 | link:../man/man1/scaragui.1.html[scaragui] |Vismach Virtual Machine GUI||
-| link:../man/man1/touchy.1.html[touchy] |axis - TOUCHY LinuxCNC Graphical User Interface||
 | link:../man/man1/xyzac-trt-gui.1.html[xyzac-trt-gui] |Vismach Virtual Machine GUI||
 | link:../man/man1/xyzbc-trt-gui.1.html[xyzbc-trt-gui] |Vismach Virtual Machine GUI||
 |=======================
 
+=== Motion (Userspace)
+[{tab_options}]
+|=======================
+| link:../man/man1/halui.1.html[halui] | Observe HAL pins and command LinuxCNC through NML. ||
+| link:../man/man1/io.1.html[io] |iocontrol - interacts with HAL or G-code in userspace||
+| link:../man/man1/iocontrol.1.html[iocontrol] |interacts with HAL or G-code in userspace||
+| link:../man/man1/iov2.1.html[iov2] |interacts with HAL or G-code in userspace||
+| link:../man/man1/milltask.1.html[milltask] |Userspace task controller for LinuxCNC||
+| link:../man/man9/motion.9.html[motion] | Accepts NML motion commands, interacts with HAL in realtime. ||
+|=======================
+
 === Hardware Drivers
+==== VFD & Communication Interfaces (Userspace)
 [{tab_options}]
 |=======================
 | link:../man/man1/elbpcom.1.html[elbpcom] |Communicate with Mesa ethernet cards||
@@ -75,7 +107,31 @@ man axis (or perhaps 'man 1 axis' if your system requires it.)
 | link:../man/man1/xhc-whb04b-6.1.html[xhc-whb04b-6] |Userspace jog dial HAL component for the wireless XHC WHB04B-6 USB device&.||
 |=======================
 
-=== Diagnostic and Configuration Tools
+[[sec:Realtime-Components-pilotes]]
+=== Mesa and other I/O Cards (Realtime)
+[{tab_options}]
+|=======================
+| hal_ppmc | Pico Systems <<cha:pico-drivers,driver>> for analog servo, PWM and Stepper controller. ||
+| link:../man/man9/hal_bb_gpio.9.html[hal_bb_gpio] |Driver for beaglebone GPIO pins||
+| link:../man/man9/hm2_7i43.9.html[hm2_7i43] | Mesa Electronics driver for the 7i43 EPP Anything IO board with HostMot2. (See the man page for more information) ||
+| link:../man/man9/hm2_7i90.9.html[hm2_7i90] |LinuxCNC HAL driver for the Mesa Electronics 7i90 EPP Anything IO board with HostMot2 firmware.||
+| link:../man/man9/hm2_eth.9.html[hm2_eth] |LinuxCNC HAL driver for the Mesa Electronics Ethernet Anything IO boards, with HostMot2 firmware.||
+| link:../man/man9/hm2_pci.9.html[hm2_pci] | Mesa Electronics driver for the 5i20, 5i22, 5i23, 4i65, and 4i68 Anything I/O boards, with HostMot2 firmware. (See the man page for more information) ||
+| link:../man/man9/hm2_rpspi.9.html[hm2_rpspi] |LinuxCNC HAL driver for the Mesa Electronics SPI Anything IO boards, with HostMot2 firmware.||
+| link:../man/man9/hm2_spi.9.html[hm2_spi] |LinuxCNC HAL driver for the Mesa Electronics SPI Anything IO boards, with HostMot2 firmware.||
+| link:../man/man9/hostmot2.9.html[hostmot2] | Mesa Electronics <<cha:mesa-hostmot2-driver,driver>> for the HostMot2 firmware. ||
+| link:../man/man9/max31855.9.html[max31855] |Support for the MAX31855 Thermocouple-to-Digital converter using bitbanged spi||
+| link:../man/man9/mesa_7i65.9.html[mesa_7i65] | Mesa Electronics driver for the 7i65 eight-axis servo card. (See the man page for more information) ||
+| link:../man/man9/mesa_pktgyro_test.9.html[mesa_pktgyro_test] |PktUART simple test with Microstrain 3DM-GX3-15 gyro||
+| link:../man/man9/opto_ac5.9.html[opto_ac5] |Realtime driver for opto22 PCI-AC5 cards||
+| pluto_servo | Pluto-P <<cha:pluto-p-driver,driver>> and firmware for the parallel port FPGA, for servos. ||
+| pluto_step | Pluto-P <<cha:pluto-p-driver,driver>> for the parallel port FPGA, for steppers. ||
+| link:../man/man9/serport.9.html[serport] | Hardware driver for the digital I/O bits of the 8250 and 16550 serial port. ||
+| link:../man/man9/sserial.9.html[sserial] |hostmot2 - Smart Serial LinuxCNC HAL driver for the Mesa Electronics HostMot2 Smart-Serial remote cards||
+| link:../man/man9/thc.9.html[thc] | Torch Height Control using a Mesa THC card or any analog to velocity input ||
+|=======================
+
+=== Utilities (Userspace)
 [{tab_options}]
 |=======================
 | link:../man/man1/hal-histogram.1.html[hal-histogram] |plots the value of a HAL pin as a histogram||
@@ -88,32 +144,16 @@ man axis (or perhaps 'man 1 axis' if your system requires it.)
 | link:../man/man1/latency-plot.1.html[latency-plot] |another way to view latency numbers||
 | link:../man/man1/latency-test.1.html[latency-test] |test the realtime system latency||
 | link:../man/man1/pncconf.1.html[pncconf] |configuration wizard for Mesa cards||
+| link:../man/man9/setsserial.9.html[setsserial] |a utility for setting Smart Serial NVRAM parameters.
+NOTE: This rather clunky utility is no longer needed except for flashing new smart-serial remote firmware.
+Smart-serial remote parameters can now be set in the HAL file in the normal way.||
 | link:../man/man1/sim_pin.1.html[sim_pin] |gui for displaying and setting one or more Hal inputs||
 | link:../man/man1/stepconf.1.html[stepconf] |A configuration wizard for parallel-port based machines.||
+
 |=======================
 
-
-include::components_gen1.adoc[]
-
-[[sec:realtime-components]]
-
-== Realtime Components
-
-Some of these will have expanded descriptions from the man pages. Some
-will have limited descriptions. All of the components have man pages.
-From this list you know what components exist and can use 'man n name' to
-get additional information. To view the information in the man page, in a
-terminal window type:
-
-----
-man motion (or perhaps 'man 9 motion' if your system requires it.)
-----
-
-[NOTE]
-See also the 'Man Pages' section of the link:../index.html[docs main page] or the
-link:../man/man9/[directory listing of man9].
-
-=== Logic and Bitwise components
+=== Signal processing (Realtime)
+==== Logic and Bitwise
 [{tab_options}]
 |=======================
 | link:../man/man9/and2.9.html[and2] | Two-input AND gate. For out to be true both inputs must be true. (link:../man/man9/and2.9.html[and2]) ||
@@ -146,7 +186,7 @@ link:../man/man9/[directory listing of man9].
 |=======================
 
 [[sec:Realtime-Components-flottant]]
-=== Arithmetic and float-components
+==== Arithmetic and float
 [{tab_options}]
 |=======================
 | link:../man/man9/abs_s32.9.html[abs_s32] |Compute the absolute value and sign of the input signal||
@@ -189,7 +229,7 @@ Limit its slew rate to less than maxv per second. Limit its second derivative to
 | link:../man/man9/weighted_sum.9.html[weighted_sum] | Convert a group of bits to an integer. | |
 |=======================
 
-=== Type conversion
+==== Type conversion
 [{tab_options}]
 |=======================
 | link:../man/man9/bin2gray.9.html[bin2gray] |Convert a number to the gray-code representation||
@@ -208,32 +248,8 @@ Limit its slew rate to less than maxv per second. Limit its second derivative to
 | link:../man/man9/gray2bin.9.html[gray2bin] |Convert a gray-code input to binary||
 |=======================
 
-[[sec:Realtime-Components-pilotes]]
-=== Hardware Drivers
-[{tab_options}]
-|=======================
-| hal_ppmc | Pico Systems <<cha:pico-drivers,driver>> for analog servo, PWM and Stepper controller. ||
-| link:../man/man9/hal_bb_gpio.9.html[hal_bb_gpio] |Driver for beaglebone GPIO pins||
-| link:../man/man9/hm2_7i43.9.html[hm2_7i43] | Mesa Electronics driver for the 7i43 EPP Anything IO board with HostMot2. (See the man page for more information) ||
-| link:../man/man9/hm2_7i90.9.html[hm2_7i90] |LinuxCNC HAL driver for the Mesa Electronics 7i90 EPP Anything IO board with HostMot2 firmware.||
-| link:../man/man9/hm2_eth.9.html[hm2_eth] |LinuxCNC HAL driver for the Mesa Electronics Ethernet Anything IO boards, with HostMot2 firmware.||
-| link:../man/man9/hm2_pci.9.html[hm2_pci] | Mesa Electronics driver for the 5i20, 5i22, 5i23, 4i65, and 4i68 Anything I/O boards, with HostMot2 firmware. (See the man page for more information) ||
-| link:../man/man9/hm2_rpspi.9.html[hm2_rpspi] |LinuxCNC HAL driver for the Mesa Electronics SPI Anything IO boards, with HostMot2 firmware.||
-| link:../man/man9/hm2_spi.9.html[hm2_spi] |LinuxCNC HAL driver for the Mesa Electronics SPI Anything IO boards, with HostMot2 firmware.||
-| link:../man/man9/hostmot2.9.html[hostmot2] | Mesa Electronics <<cha:mesa-hostmot2-driver,driver>> for the HostMot2 firmware. ||
-| link:../man/man9/max31855.9.html[max31855] |Support for the MAX31855 Thermocouple-to-Digital converter using bitbanged spi||
-| link:../man/man9/mesa_7i65.9.html[mesa_7i65] | Mesa Electronics driver for the 7i65 eight-axis servo card. (See the man page for more information) ||
-| link:../man/man9/mesa_pktgyro_test.9.html[mesa_pktgyro_test] |PktUART simple test with Microstrain 3DM-GX3-15 gyro||
-| link:../man/man9/opto_ac5.9.html[opto_ac5] |Realtime driver for opto22 PCI-AC5 cards||
-| pluto_servo | Pluto-P <<cha:pluto-p-driver,driver>> and firmware for the parallel port FPGA, for servos. ||
-| pluto_step | Pluto-P <<cha:pluto-p-driver,driver>> for the parallel port FPGA, for steppers. ||
-| link:../man/man9/serport.9.html[serport] | Hardware driver for the digital I/O bits of the 8250 and 16550 serial port. ||
-| link:../man/man9/sserial.9.html[sserial] |hostmot2 - Smart Serial LinuxCNC HAL driver for the Mesa Electronics HostMot2 Smart-Serial remote cards||
-| link:../man/man9/thc.9.html[thc] | Torch Height Control using a Mesa THC card or any analog to velocity input ||
-|=======================
-
 [[sec:Realtime-Components-cinematiques]]
-=== Kinematics
+=== Kinematics (Realtime)
 [{tab_options}]
 |=======================
 | link:../man/man9/corexy_by_hal.9.html[corexy_by_hal] |CoreXY kinematics||
@@ -257,7 +273,7 @@ Limit its slew rate to less than maxv per second. Limit its second derivative to
 | link:../man/man9/userkins.9.html[userkins] |Template for user-built kinematics||
 |=======================
 
-=== Motor control
+=== Motor control (Realtime)
 [{tab_options}]
 |=======================
 | link:../man/man9/at_pid.9.html[at_pid] | Proportional/integral/derivative controller with auto tuning. ||
@@ -271,11 +287,10 @@ Limit its slew rate to less than maxv per second. Limit its second derivative to
 | link:../man/man9/stepgen.9.html[stepgen] | Software step pulse generation. <<sec:stepgen,Description>>. ||
 |=======================
 
-=== Other
+=== Other (Realtime)
 [{tab_options}]
 |=======================
 | link:../man/man9/comp.9.html[comp] | Build, compile and install LinuxCNC HAL components. ||
-| link:../man/man9/motion.9.html[motion] | Accepts NML motion commands, interacts with HAL in realtime. ||
 | link:../man/man9/classicladder.9.html[classicladder] | Realtime software PLC based on ladder logic. See <<cha:classicladder,ClassicLadder>> chapter for more information. ||
 | link:../man/man9/threads.9.html[threads] | Creates hard realtime HAL threads. ||
 | link:../man/man9/charge_pump.9.html[charge_pump] | Creates a square-wave for the 'charge pump' input of some controller boards.
@@ -298,10 +313,10 @@ is 0.0001 seconds and the formula would be 1/(0.0001 x 2) = 5,000 hz or 5 Khz. |
 | link:../man/man9/watchdog.9.html[watchdog] | Monitor one to thirty-two inputs for a 'heartbeat'. ||
 |=======================
 
-include::components_gen9.adoc[]
+
+include::components_gen.adoc[]
 
 == HAL API calls
-
 ....
 hal_add_funct_to_thread.3hal
 hal_bit_t.3hal
