@@ -183,13 +183,29 @@ static void hm2_write(void *void_hm2, long period) {
     hm2_finish_write(hm2);
 
     HM2_TRACE(&hm2->trace, HM2_TRACE_WRITE_EXIT, 0);
-    // dočasné vypisování
+/*    // dočasné vypisování
     static int count;
 
     count++;
 
     if (count == 1000)
         hm2_trace_dump(&hm2->trace);
+*/
+    hm2_trace_trigger_eval(
+        &hm2->trigger,
+        &hm2->trace,
+        period);
+
+    if (hm2->trigger.freeze_requested &&
+        !hm2->trigger.frozen) {
+
+        hm2->trigger.frozen = true;
+
+        rtapi_print(
+            "HM2 trigger fired: ratio=%u%% total_tmax=%u ns\n",
+            hm2->trigger.ratio_pct,
+            hm2->trace.total_tmax_ns);
+    }
 }
 
 
