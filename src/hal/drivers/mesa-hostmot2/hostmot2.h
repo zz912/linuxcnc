@@ -29,6 +29,8 @@
 #include "hostmot2-lowlevel.h"
 
 #include "hm2_trace.h"
+#include "hm2_trace_trigger.h"
+
 
 #ifndef FIRMWARE_NAME_MAX
     #define FIRMWARE_NAME_MAX  30
@@ -1714,6 +1716,7 @@ typedef struct {
     bool ddr_initialized;
 
     struct hm2_trace trace;
+    struct hm2_trace_trigger trigger;
 
     struct rtapi_list_head list;
 } hostmot2_t;

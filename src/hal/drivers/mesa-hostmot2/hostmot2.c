@@ -1169,7 +1169,8 @@ static void hm2_cleanup(hostmot2_t *hm2) {
 
     // free all the tram entries
     hm2_tram_cleanup(hm2);
-    
+
+    hm2_trace_trigger_cleanup(&hm2->trigger);
     hm2_trace_cleanup(&hm2->trace);
 }
 
@@ -1338,6 +1339,12 @@ int hm2_register(hm2_lowlevel_io_t *llio, char *config_string) {
     r = hm2_trace_init(&hm2->trace);
     if (r != 0) {
         rtapi_kfree(hm2);
+        return r;
+    }
+
+    r = hm2_trace_trigger_init(&hm2->trigger);
+    if (r < 0) {
+        hm2_trace_cleanup(&hm2->trace);
         return r;
     }
 
