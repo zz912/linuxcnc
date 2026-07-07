@@ -130,6 +130,8 @@ static void hm2_read(void *void_hm2, long period) {
 static void hm2_write(void *void_hm2, long period) {
     hostmot2_t *hm2 = void_hm2;
 
+    HM2_TRACE(&hm2->trace, HM2_TRACE_WRITE_ENTER, 0);
+
     // if there are comm problems, wait for the user to fix it
     if ((*hm2->llio->io_error) != 0) return;
 
@@ -179,6 +181,15 @@ static void hm2_write(void *void_hm2, long period) {
 
     hm2_raw_write(hm2);
     hm2_finish_write(hm2);
+
+    HM2_TRACE(&hm2->trace, HM2_TRACE_WRITE_EXIT, 0);
+    // dočasné vypisování
+    static int count;
+
+    count++;
+
+    if (count == 1000)
+        hm2_trace_dump(&hm2->trace);
 }
 
 

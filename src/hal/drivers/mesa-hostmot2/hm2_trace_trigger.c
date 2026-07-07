@@ -21,3 +21,11 @@ void hm2_trace_trigger_cleanup(struct hm2_trace_trigger *trigger)
 {
     (void)trigger;
 }
+
+void hm2_trace_trigger_eval(
+    struct hm2_trace_trigger *trigger,
+    const struct hm2_trace_trigger_input *input)
+{
+    (void)trigger;
+    (void)input;
+}

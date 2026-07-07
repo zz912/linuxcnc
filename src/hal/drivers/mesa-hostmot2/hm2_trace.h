@@ -11,6 +11,9 @@ enum hm2_trace_event {
 
     HM2_TRACE_RECV_ENTER,
     HM2_TRACE_RECV_EXIT,
+
+   HM2_TRACE_WRITE_ENTER,
+   HM2_TRACE_WRITE_EXIT,
 };
 
 struct hm2_trace_entry {
@@ -28,6 +31,18 @@ struct hm2_trace {
     rtapi_u32 size;
 
     struct hm2_trace_entry *ring;
+
+    uint64_t read_start_ns;
+    uint64_t write_start_ns;
+
+    uint32_t total_runtime_ns;
+    uint32_t total_tmax_ns;
+
+    uint32_t read_runtime_ns;
+    uint32_t write_runtime_ns;
+
+    uint32_t read_tmax_ns;
+    uint32_t write_tmax_ns;
 };
 
 int hm2_trace_init(struct hm2_trace *trace);

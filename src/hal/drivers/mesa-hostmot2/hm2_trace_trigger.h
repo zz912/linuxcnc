@@ -2,6 +2,7 @@
 #define HM2_TRACE_TRIGGER_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 enum hm2_trace_trigger_reason {
     HM2_TRACE_TRIGGER_NONE = 0,
@@ -12,6 +13,15 @@ enum hm2_trace_trigger_reason {
 struct hm2_trace_trigger_config {
     unsigned int servo_threshold_pct;
     unsigned int nic_threshold_pct;
+};
+
+struct hm2_trace_trigger_input {
+    uint32_t servo_period_ns;
+
+    uint32_t servo_tmax_ns;
+
+    uint32_t read_tmax_ns;
+    uint32_t write_tmax_ns;
 };
 
 struct hm2_trace_trigger {
@@ -25,5 +35,9 @@ struct hm2_trace_trigger {
 
 int hm2_trace_trigger_init(struct hm2_trace_trigger *trigger);
 void hm2_trace_trigger_cleanup(struct hm2_trace_trigger *trigger);
+
+void hm2_trace_trigger_eval(
+    struct hm2_trace_trigger *trigger,
+    const struct hm2_trace_trigger_input *input);
 
 #endif
