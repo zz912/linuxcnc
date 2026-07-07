@@ -94,6 +94,8 @@ static void hm2_read_request(void *void_hm2, long period) {
 static void hm2_read(void *void_hm2, long period) {
     hostmot2_t *hm2 = void_hm2;
 
+    HM2_TRACE(&hm2->trace, HM2_TRACE_READ_ENTER, 0);
+
     if(!hm2->llio->read_requested) hm2_read_request(void_hm2, period);
     hm2->llio->read_requested = false;
 
@@ -120,6 +122,8 @@ static void hm2_read(void *void_hm2, long period) {
 
     hm2_tp_pwmgen_process_read(hm2); // check the status of the fault bit
     hm2_dpll_process_tram_read(hm2, period);
+
+    HM2_TRACE(&hm2->trace, HM2_TRACE_READ_EXIT, 0);
 }
 
 
