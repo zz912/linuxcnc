@@ -1008,6 +1008,7 @@ obj-$(CONFIG_HOSTMOT2) += hm2_spi.o hm2_rpspi.o hm2_spix.o
 endif
 hostmot2-objs :=			  \
     hal/drivers/mesa-hostmot2/hostmot2.o  \
+    hal/drivers/mesa-hostmot2/hm2_trace.o \
     hal/drivers/mesa-hostmot2/abs_encoder.o\
     hal/drivers/mesa-hostmot2/bitfile.o   \
     hal/drivers/mesa-hostmot2/bspi.o	  \

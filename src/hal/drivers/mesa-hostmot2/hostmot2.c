@@ -1165,6 +1165,8 @@ static void hm2_cleanup(hostmot2_t *hm2) {
 
     // free all the tram entries
     hm2_tram_cleanup(hm2);
+    
+    hm2_trace_cleanup(&hm2->trace);
 }
 
 
@@ -1328,6 +1330,12 @@ int hm2_register(hm2_lowlevel_io_t *llio, char *config_string) {
     }
 
     memset(hm2, 0, sizeof(hostmot2_t));
+
+    r = hm2_trace_init(&hm2->trace);
+    if (r != 0) {
+        rtapi_kfree(hm2);
+        return r;
+    }
 
     hm2->llio = llio;
     hm2->use_serial_numbers = use_serial_numbers;
