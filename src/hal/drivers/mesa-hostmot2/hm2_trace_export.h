@@ -3,12 +3,12 @@
 
 struct hm2_trace;
 
-int hm2_trace_export_init(void);
+int hm2_trace_export_init(int comp_id);
 void hm2_trace_export_cleanup(void);
 
 /*
  * Export a frozen trace capture.
  */
-int hm2_trace_export(const struct hm2_trace *trace);
+int hm2_trace_export(struct hm2_trace *trace);
 
 #endif

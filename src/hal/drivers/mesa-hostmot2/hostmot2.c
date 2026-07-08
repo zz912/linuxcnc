@@ -30,6 +30,7 @@
 
 #include "hostmot2.h"
 #include "bitfile.h"
+#include "hm2_trace_export.h"
 
 
 
@@ -200,6 +201,8 @@ static void hm2_write(void *void_hm2, long period) {
         !hm2->trace.frozen) {
 
         hm2->trace.frozen = true;
+
+        hm2_trace_export(&hm2->trace);
 
         rtapi_print(
             "HM2 trigger fired: ratio=%u%% total_tmax=%u ns head=%u\n",
@@ -1199,6 +1202,7 @@ static void hm2_cleanup(hostmot2_t *hm2) {
     hm2_tram_cleanup(hm2);
 
     hm2_trace_trigger_cleanup(&hm2->trigger);
+    hm2_trace_export_cleanup();
     hm2_trace_cleanup(&hm2->trace);
 }
 
@@ -1372,6 +1376,13 @@ int hm2_register(hm2_lowlevel_io_t *llio, char *config_string) {
 
     r = hm2_trace_trigger_init(&hm2->trigger);
     if (r < 0) {
+        hm2_trace_cleanup(&hm2->trace);
+        return r;
+    }
+
+    r = hm2_trace_export_init(comp_id);
+    if (r < 0) {
+        hm2_trace_trigger_cleanup(&hm2->trigger);
         hm2_trace_cleanup(&hm2->trace);
         return r;
     }
