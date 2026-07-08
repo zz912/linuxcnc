@@ -29,6 +29,7 @@ struct hm2_trace {
 
     rtapi_u32 head;
     rtapi_u32 size;
+    rtapi_u64 samples_written;
 
     struct hm2_trace_entry *ring;
 

@@ -97,6 +97,8 @@ static void hm2_read(void *void_hm2, long period) {
 
     HM2_TRACE(&hm2->trace, HM2_TRACE_READ_ENTER, 0);
 
+    HM2_TRACE(&hm2->trace, HM2_TRACE_RECV_ENTER, 0);
+
     if(!hm2->llio->read_requested) hm2_read_request(void_hm2, period);
     hm2->llio->read_requested = false;
 
@@ -105,6 +107,8 @@ static void hm2_read(void *void_hm2, long period) {
     // if there's a temporary read failure, don't sweat it
     if(hm2_finish_read(hm2) == -EAGAIN) return;
     if ((*hm2->llio->io_error) != 0) return;
+
+    HM2_TRACE(&hm2->trace, HM2_TRACE_RECV_EXIT, 0);
 
     hm2_watchdog_process_tram_read(hm2);
     hm2_ioport_gpio_process_tram_read(hm2);
@@ -184,14 +188,7 @@ static void hm2_write(void *void_hm2, long period) {
     hm2_finish_write(hm2);
 
     HM2_TRACE(&hm2->trace, HM2_TRACE_WRITE_EXIT, 0);
-/*    // dočasné vypisování
-    static int count;
 
-    count++;
-
-    if (count == 1000)
-        hm2_trace_dump(&hm2->trace);
-*/
     hm2_trace_trigger_eval(
         &hm2->trigger,
         &hm2->trace,
@@ -205,7 +202,7 @@ static void hm2_write(void *void_hm2, long period) {
         hm2_trace_export(&hm2->trace, &hm2->trigger);
 
         rtapi_print(
-            "HM2 trigger fired: ratio=%u%% total_tmax=%u ns head=%u\n",
+            "[HM2.TRACE][INFO] Trigger fired: ratio=%u%% total_tmax=%u ns head=%u\n",
             hm2->trigger.ratio_pct,
             hm2->trace.total_tmax_ns,
             hm2->trace.head);

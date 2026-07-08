@@ -12,6 +12,7 @@ int hm2_trace_init(struct hm2_trace *trace)
 
     trace->head = 0;
     trace->size = HM2_TRACE_RING_SIZE;
+    trace->samples_written = 0;
 
     trace->ring = rtapi_kzalloc(
         sizeof(struct hm2_trace_entry) * trace->size,
@@ -164,6 +165,8 @@ void hm2_trace_log(
     entry->value = value;
 
     trace->head++;
+
+    trace->samples_written++;
 
     if (trace->head >= trace->size)
         trace->head = 0;

@@ -16,6 +16,7 @@ struct hm2_trace_shmem {
 
     uint32_t ring_head;
     uint32_t ring_size;
+    uint64_t samples_written;
 
     uint32_t trigger_reason;
     uint32_t trigger_ratio_pct;
