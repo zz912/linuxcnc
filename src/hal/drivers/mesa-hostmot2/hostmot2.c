@@ -202,7 +202,7 @@ static void hm2_write(void *void_hm2, long period) {
 
         hm2->trace.frozen = true;
 
-        hm2_trace_export(&hm2->trace);
+        hm2_trace_export(&hm2->trace, &hm2->trigger);
 
         rtapi_print(
             "HM2 trigger fired: ratio=%u%% total_tmax=%u ns head=%u\n",

@@ -1,6 +1,7 @@
 #include "hm2_trace_export.h"
 
 #include "hm2_trace.h"
+#include "hm2_trace_trigger.h"
 
 #include <rtapi.h>
 
@@ -8,13 +9,19 @@ static int export_comp_id;
 
 static int export_shmem_id = -1;
 
-static void *export_shmem = NULL;
+static struct hm2_trace_shmem *export_shmem = NULL;
 
 #define HM2_TRACE_SHMEM_KEY  0x484D3254  /* "HM2T" */
+
+#define HM2_TRACE_EXPORT_VERSION 1
 
 struct hm2_trace_shmem {
     uint32_t version;
     uint32_t valid;
+
+    uint32_t ring_head;
+    uint32_t trigger_reason;
+    uint32_t trigger_ratio_pct;
 
     uint32_t read_runtime_ns;
     uint32_t write_runtime_ns;
@@ -38,11 +45,11 @@ int hm2_trace_export_init(int comp_id)
     if (export_shmem_id < 0)
         return export_shmem_id;
 
-    if (rtapi_shmem_getptr(export_shmem_id, &export_shmem) < 0)
+    if (rtapi_shmem_getptr(export_shmem_id, (void **)&export_shmem) < 0)
         return -1;
 
-    ((struct hm2_trace_shmem *)export_shmem)->version = 1;
-    ((struct hm2_trace_shmem *)export_shmem)->valid = 0;
+    export_shmem->version = HM2_TRACE_EXPORT_VERSION;
+    export_shmem->valid = 0;
 
     return 0;
  }
@@ -56,22 +63,29 @@ void hm2_trace_export_cleanup(void)
     export_shmem_id = -1;
 }
 
-int hm2_trace_export(struct hm2_trace *trace)
+int hm2_trace_export(
+    struct hm2_trace *trace,
+    const struct hm2_trace_trigger *trigger)
 {
-    struct hm2_trace_shmem *shmem = export_shmem;
+    (void)trigger;
 
-    if (shmem == NULL)
+    if (export_shmem == NULL)
         return -1;
 
-    shmem->read_runtime_ns = trace->read_runtime_ns;
-    shmem->write_runtime_ns = trace->write_runtime_ns;
-    shmem->total_runtime_ns = trace->total_runtime_ns;
+    export_shmem->read_runtime_ns = trace->read_runtime_ns;
+    export_shmem->write_runtime_ns = trace->write_runtime_ns;
+    export_shmem->total_runtime_ns = trace->total_runtime_ns;
 
-    shmem->read_tmax_ns = trace->read_tmax_ns;
-    shmem->write_tmax_ns = trace->write_tmax_ns;
-    shmem->total_tmax_ns = trace->total_tmax_ns;
+    export_shmem->read_tmax_ns = trace->read_tmax_ns;
+    export_shmem->write_tmax_ns = trace->write_tmax_ns;
+    export_shmem->total_tmax_ns = trace->total_tmax_ns;
 
-    shmem->valid = 1;
+    export_shmem->ring_head = trace->head;
+
+    export_shmem->trigger_reason = trigger->reason;
+    export_shmem->trigger_ratio_pct = trigger->ratio_pct;
+
+    export_shmem->valid = 1;
 
     return 0;
 }
