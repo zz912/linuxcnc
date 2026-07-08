@@ -1010,6 +1010,7 @@ hostmot2-objs :=			  \
     hal/drivers/mesa-hostmot2/hostmot2.o  \
     hal/drivers/mesa-hostmot2/hm2_trace.o \
     hal/drivers/mesa-hostmot2/hm2_trace_trigger.o \
+    hal/drivers/mesa-hostmot2/hm2_trace_log.o \
     hal/drivers/mesa-hostmot2/abs_encoder.o\
     hal/drivers/mesa-hostmot2/bitfile.o   \
     hal/drivers/mesa-hostmot2/bspi.o	  \

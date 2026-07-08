@@ -197,14 +197,15 @@ static void hm2_write(void *void_hm2, long period) {
         period);
 
     if (hm2->trigger.freeze_requested &&
-        !hm2->trigger.frozen) {
+        !hm2->trace.frozen) {
 
-        hm2->trigger.frozen = true;
+        hm2->trace.frozen = true;
 
         rtapi_print(
-            "HM2 trigger fired: ratio=%u%% total_tmax=%u ns\n",
+            "HM2 trigger fired: ratio=%u%% total_tmax=%u ns head=%u\n",
             hm2->trigger.ratio_pct,
-            hm2->trace.total_tmax_ns);
+            hm2->trace.total_tmax_ns,
+            hm2->trace.head);
     }
 }
 

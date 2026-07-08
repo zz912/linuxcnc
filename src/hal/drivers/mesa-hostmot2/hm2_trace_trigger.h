@@ -20,7 +20,6 @@ struct hm2_trace_trigger {
     struct hm2_trace_trigger_config config;
 
     bool freeze_requested;
-    bool frozen;
 
     enum hm2_trace_trigger_reason reason;
 

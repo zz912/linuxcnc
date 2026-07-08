@@ -10,7 +10,6 @@ int hm2_trace_trigger_init(struct hm2_trace_trigger *trigger)
     trigger->config.latency_threshold_pct = 10;
 
     trigger->freeze_requested = false;
-    trigger->frozen = false;
 
     trigger->reason = HM2_TRACE_TRIGGER_NONE;
     trigger->ratio_pct = 0;
