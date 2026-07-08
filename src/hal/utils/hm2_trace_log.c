@@ -8,6 +8,14 @@
 
 #include "../drivers/mesa-hostmot2/hm2_trace_export.h"
 
+static volatile int running = 1;
+
+static void signal_handler(int sig)
+{
+    (void)sig;
+    running = 0;
+}
+
 static FILE *open_log_file(void)
 {
     char path[512];
@@ -73,12 +81,19 @@ int main(void)
 
     hal_ready(comp_id);
 
-    for (;;) {
+    signal(SIGINT, signal_handler);
+    signal(SIGTERM, signal_handler);
 
-        if (!shmem->valid) {
+    uint32_t last_generation = shmem->generation;
+
+    while (running) {
+
+        if (shmem->generation == last_generation) {
             usleep(100000);
             continue;
         }
+
+        last_generation = shmem->generation;
 
         FILE *log;
 
@@ -89,15 +104,34 @@ int main(void)
         }
 
         fprintf(log, "HM2 TRACE\n\n");
-        fprintf(log, "generation : %u\n", shmem->generation);
-        fprintf(log, "ring_head  : %u\n", shmem->ring_head);
-        fprintf(log, "total_tmax : %u ns\n", shmem->total_tmax_ns);
+
+        fprintf(log, "version           : %u\n", shmem->version);
+        fprintf(log, "generation        : %u\n", shmem->generation);
+
+        fprintf(log, "trigger_reason    : %u\n", shmem->trigger_reason);
+        fprintf(log, "trigger_ratio     : %u %%\n", shmem->trigger_ratio_pct);
+
+        fprintf(log, "\n");
+
+        fprintf(log, "read_runtime_ns   : %u\n", shmem->read_runtime_ns);
+        fprintf(log, "write_runtime_ns  : %u\n", shmem->write_runtime_ns);
+        fprintf(log, "total_runtime_ns  : %u\n", shmem->total_runtime_ns);
+
+        fprintf(log, "\n");
+
+        fprintf(log, "read_tmax_ns      : %u\n", shmem->read_tmax_ns);
+        fprintf(log, "write_tmax_ns     : %u\n", shmem->write_tmax_ns);
+        fprintf(log, "total_tmax_ns     : %u\n", shmem->total_tmax_ns);
+
+        fprintf(log, "\n");
+
+        fprintf(log, "ring_size         : %u\n", shmem->ring_size);
+        fprintf(log, "ring_head         : %u\n", shmem->ring_head);
 
         fclose(log);
 
         printf("Trace written.\n");
 
-        break;
     }
 
     hal_exit(comp_id);

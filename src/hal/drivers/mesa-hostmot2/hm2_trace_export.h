@@ -12,7 +12,6 @@ struct hm2_trace_trigger;
 
 struct hm2_trace_shmem {
     uint32_t version;
-    uint32_t valid;
     uint32_t generation;
 
     uint32_t ring_head;

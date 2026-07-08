@@ -31,7 +31,6 @@ int hm2_trace_export_init(int comp_id)
         return -1;
 
     export_shmem->version = HM2_TRACE_EXPORT_VERSION;
-    export_shmem->valid = 0;
     export_shmem->generation = 0;
 
     memset(export_shmem->ring, 0, sizeof(export_shmem->ring));
@@ -82,7 +81,6 @@ int hm2_trace_export(
     export_shmem->trigger_reason = trigger->reason;
     export_shmem->trigger_ratio_pct = trigger->ratio_pct;
 
-    export_shmem->valid = 1;
     export_shmem->generation++;
 
     return 0;
