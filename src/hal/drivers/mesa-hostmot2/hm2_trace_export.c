@@ -5,33 +5,15 @@
 
 #include <rtapi.h>
 
+#include <string.h>
+
 static int export_comp_id;
 
 static int export_shmem_id = -1;
 
 static struct hm2_trace_shmem *export_shmem = NULL;
 
-#define HM2_TRACE_SHMEM_KEY  0x484D3254  /* "HM2T" */
-
 #define HM2_TRACE_EXPORT_VERSION 1
-
-struct hm2_trace_shmem {
-    uint32_t version;
-    uint32_t valid;
-
-    uint32_t ring_head;
-    uint32_t trigger_reason;
-    uint32_t trigger_ratio_pct;
-
-    uint32_t read_runtime_ns;
-    uint32_t write_runtime_ns;
-    uint32_t total_runtime_ns;
-
-    uint32_t read_tmax_ns;
-    uint32_t write_tmax_ns;
-    uint32_t total_tmax_ns;
-
-};
 
 int hm2_trace_export_init(int comp_id)
 {
@@ -50,6 +32,9 @@ int hm2_trace_export_init(int comp_id)
 
     export_shmem->version = HM2_TRACE_EXPORT_VERSION;
     export_shmem->valid = 0;
+    export_shmem->generation = 0;
+
+    memset(export_shmem->ring, 0, sizeof(export_shmem->ring));
 
     return 0;
  }
@@ -72,6 +57,8 @@ int hm2_trace_export(
     if (export_shmem == NULL)
         return -1;
 
+    export_shmem->generation++;
+
     export_shmem->read_runtime_ns = trace->read_runtime_ns;
     export_shmem->write_runtime_ns = trace->write_runtime_ns;
     export_shmem->total_runtime_ns = trace->total_runtime_ns;
@@ -81,11 +68,22 @@ int hm2_trace_export(
     export_shmem->total_tmax_ns = trace->total_tmax_ns;
 
     export_shmem->ring_head = trace->head;
+    export_shmem->ring_size = HM2_TRACE_RING_SIZE;
+
+    memcpy(export_shmem->ring,
+           trace->ring,
+           sizeof(export_shmem->ring));
+
+    /*
+     * Publish data only after the shared memory image
+     * has been fully updated.
+     */
 
     export_shmem->trigger_reason = trigger->reason;
     export_shmem->trigger_ratio_pct = trigger->ratio_pct;
 
     export_shmem->valid = 1;
+    export_shmem->generation++;
 
     return 0;
 }

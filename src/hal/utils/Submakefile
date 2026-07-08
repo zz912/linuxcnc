@@ -26,6 +26,16 @@ USERSRCS += $(HALRMTSRCS)
 	$(Q)$(CC) $(LDFLAGS) -o $@ $^ -lpthread
 TARGETS += ../bin/halrmt
 
+HM2TRACELOGSRCS := hal/utils/hm2_trace_log.c
+USERSRCS += $(HM2TRACELOGSRCS)
+
+../bin/hm2-trace-log: $(call TOOBJS, $(HM2TRACELOGSRCS)) \
+        ../lib/liblinuxcnchal.so.0
+	$(ECHO) Linking $(notdir $@)
+	$(Q)$(CC) $(LDFLAGS) -o $@ $^
+
+TARGETS += ../bin/hm2-trace-log
+
 ifneq ($(GTK_VERSION),)
 HALMETERSRCS := \
     hal/utils/meter.c \
