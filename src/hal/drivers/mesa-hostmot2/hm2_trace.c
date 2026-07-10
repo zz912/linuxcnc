@@ -1,3 +1,23 @@
+/*
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * HostMot2 Trace Infrastructure
+ *
+ * This file is part of the HostMot2 trace infrastructure.
+ *
+ * The HostMot2 tracer is a generic realtime diagnostic framework
+ * for collecting timestamped trace events, runtime statistics and
+ * frozen snapshots for offline analysis.
+ *
+ * Architecture and design documentation:
+ *     hm2_tracer-readme.md
+ *
+ * Copyright (C) 2026 zz912
+ *
+ * Originally developed by zz912 with implementation assistance
+ * from OpenAI ChatGPT.
+ */
+
 #include <errno.h>
 
 #include <rtapi.h>
@@ -39,8 +59,7 @@ static inline rtapi_s64 hm2_trace_timestamp(void)
 
 void hm2_trace_log(
     struct hm2_trace *trace,
-    enum hm2_trace_event event,
-    rtapi_u32 value)
+    enum hm2_trace_event event)
 {
     struct hm2_trace_entry *entry;
     uint64_t now;
@@ -98,8 +117,6 @@ void hm2_trace_log(
 
     entry->timestamp = now;
     entry->event = event;
-    entry->cpu = 0;
-    entry->value = value;
 
     trace->head++;
 

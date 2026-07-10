@@ -1,3 +1,23 @@
+/*
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * HostMot2 Trace Infrastructure
+ *
+ * This file is part of the HostMot2 trace infrastructure.
+ *
+ * The HostMot2 tracer is a generic realtime diagnostic framework
+ * for collecting timestamped trace events, runtime statistics and
+ * frozen snapshots for offline analysis.
+ *
+ * Architecture and design documentation:
+ *     hm2_tracer-readme.md
+ *
+ * Copyright (C) 2026 zz912
+ *
+ * Originally developed by zz912 with implementation assistance
+ * from OpenAI ChatGPT.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -14,6 +34,9 @@
 static const char *hm2_trace_event_name(uint16_t event)
 {
     switch (event) {
+    
+    case HM2_TRACE_CYCLE_START:  // event for calculate start cycle
+        return "CYCLE_START";
 
     case HM2_TRACE_READ_ENTER:
         return "READ_ENTER";
@@ -149,12 +172,6 @@ int main(void)
             continue;
         }
 
-        HM2_TRACE_INFO("shmem->generation: %i", shmem->generation);
-        HM2_TRACE_INFO("last_generation: %i", last_generation);
-        HM2_TRACE_INFO("UINT32_MAX: %i", UINT32_MAX);
-        HM2_TRACE_INFO("last_generation != UINT32_MAX %i", (last_generation != UINT32_MAX));
-        HM2_TRACE_INFO("shmem->generation == last_generation: %i", (shmem->generation == last_generation));     
-
         last_generation = shmem->generation;
 
         char path[512];
@@ -196,14 +213,18 @@ int main(void)
         fprintf(log, "Ring buffer:\n");
         fprintf(log, "------------\n");
 
-        fprintf(log, "\n");
-        fprintf(log, " idx        timestamp       delta(ns)  cpu  event          value\n");
-        fprintf(log, "---- ---------------- --------------- ---- ------------ ----------\n");
+        fprintf(log, " idx        timestamp    snapshot(ns)      cycle(ns)      event(ns)  event\n");
+        fprintf(log, "---- ---------------- --------------- --------------- --------------- ------------\n");
+
 
         {
             uint32_t count;
             uint32_t start;
             int64_t base_timestamp = 0;
+            int64_t cycle_timestamp = 0;
+            int64_t previous_timestamp = 0;
+            int cycle_start_found = 0;
+            int first_event = 1;
             uint32_t i;
 
             if (shmem->samples_written < shmem->ring_size) {
@@ -218,19 +239,48 @@ int main(void)
                 base_timestamp = shmem->ring[start].timestamp;
 
             for (i = 0; i < count; i++) {
-                uint32_t idx =
-                    (start + i) % shmem->ring_size;
+                uint32_t idx = (start + i) % shmem->ring_size;
+                const struct hm2_trace_entry *e = &shmem->ring[idx];
 
-                fprintf(
-                    log,
-                    "%4u %16lld %+15lld %4u %-12s %10u\n",
-                    idx,
-                    (long long)shmem->ring[idx].timestamp,
-                    (long long)(shmem->ring[idx].timestamp -
-                                base_timestamp),
-                    shmem->ring[idx].cpu,
-                    hm2_trace_event_name(shmem->ring[idx].event),
-                    shmem->ring[idx].value);
+                if (e->event == HM2_TRACE_CYCLE_START) {
+                    fprintf(log, "\n");
+                    cycle_timestamp = e->timestamp;
+                    cycle_start_found = 1;
+                }
+
+                fprintf(log,
+                        "%4u %16lld %+15lld ",
+                        idx,
+                        (long long)e->timestamp,
+                        (long long)(e->timestamp - base_timestamp));
+
+                if (cycle_start_found) {
+                    fprintf(log,
+                            "%+15lld ",
+                            (long long)(e->timestamp - cycle_timestamp));
+                } else {
+                    fprintf(log,
+                            "%15s ",
+                            "n/a");
+                }
+
+                if (first_event) {
+                    fprintf(log,
+                            "%15s ",
+                            "n/a");
+                } else {
+                    fprintf(log,
+                            "%+15lld ",
+                            (long long)(e->timestamp -
+                                        previous_timestamp));
+                }
+
+                fprintf(log,
+                        "%-12s\n",
+                        hm2_trace_event_name(e->event));
+
+                previous_timestamp = e->timestamp;
+                first_event = 0;
             }
         }
 

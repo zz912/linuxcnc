@@ -1,3 +1,23 @@
+/*
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * HostMot2 Trace Infrastructure
+ *
+ * This file is part of the HostMot2 trace infrastructure.
+ *
+ * The HostMot2 tracer is a generic realtime diagnostic framework
+ * for collecting timestamped trace events, runtime statistics and
+ * frozen snapshots for offline analysis.
+ *
+ * Architecture and design documentation:
+ *     hm2_tracer-readme.md
+ *
+ * Copyright (C) 2026 zz912
+ *
+ * Originally developed by zz912 with implementation assistance
+ * from OpenAI ChatGPT.
+ */
+
 #ifndef HM2_TRACE_H
 #define HM2_TRACE_H
 
@@ -6,7 +26,9 @@
 #define HM2_TRACE_RING_SIZE 4096
 
 enum hm2_trace_event {
-    HM2_TRACE_READ_ENTER = 0,
+    HM2_TRACE_CYCLE_START = 0, // event for calculate start cycle
+
+    HM2_TRACE_READ_ENTER,
     HM2_TRACE_READ_EXIT,
 
     HM2_TRACE_RECV_ENTER,
@@ -19,8 +41,6 @@ enum hm2_trace_event {
 struct hm2_trace_entry {
     rtapi_s64 timestamp;
     rtapi_u16 event;
-    rtapi_u16 cpu;
-    rtapi_u32 value;
 };
 
 struct hm2_trace {
@@ -49,22 +69,20 @@ struct hm2_trace {
 int hm2_trace_init(struct hm2_trace *trace);
 void hm2_trace_cleanup(struct hm2_trace *trace);
 
-void hm2_trace_log(
-    struct hm2_trace *trace,
-    enum hm2_trace_event event,
-    rtapi_u32 value);
+void hm2_trace_log(struct hm2_trace *trace,
+                   enum hm2_trace_event event);
 
 void hm2_trace_dump(const struct hm2_trace *trace);
 
 #ifdef HM2_TRACE_DISABLE
 
-#define HM2_TRACE(trace, event, value) \
+#define HM2_TRACE(trace, event) \
     do { } while (0)
 
 #else
 
-#define HM2_TRACE(trace, event, value) \
-    hm2_trace_log((trace), (event), (value))
+#define HM2_TRACE(trace, event) \
+    hm2_trace_log((trace), (event))
 
 #endif
 

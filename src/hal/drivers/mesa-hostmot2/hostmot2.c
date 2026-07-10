@@ -95,9 +95,11 @@ static void hm2_read_request(void *void_hm2, long period) {
 static void hm2_read(void *void_hm2, long period) {
     hostmot2_t *hm2 = void_hm2;
 
-    HM2_TRACE(&hm2->trace, HM2_TRACE_READ_ENTER, 0);
+    HM2_TRACE(&hm2->trace, HM2_TRACE_CYCLE_START);  // event for calculate start cycle
 
-    HM2_TRACE(&hm2->trace, HM2_TRACE_RECV_ENTER, 0);
+    HM2_TRACE(&hm2->trace, HM2_TRACE_READ_ENTER);
+
+    HM2_TRACE(&hm2->trace, HM2_TRACE_RECV_ENTER);
 
     if(!hm2->llio->read_requested) hm2_read_request(void_hm2, period);
     hm2->llio->read_requested = false;
@@ -108,7 +110,7 @@ static void hm2_read(void *void_hm2, long period) {
     if(hm2_finish_read(hm2) == -EAGAIN) return;
     if ((*hm2->llio->io_error) != 0) return;
 
-    HM2_TRACE(&hm2->trace, HM2_TRACE_RECV_EXIT, 0);
+    HM2_TRACE(&hm2->trace, HM2_TRACE_RECV_EXIT);
 
     hm2_watchdog_process_tram_read(hm2);
     hm2_ioport_gpio_process_tram_read(hm2);
@@ -128,14 +130,14 @@ static void hm2_read(void *void_hm2, long period) {
     hm2_tp_pwmgen_process_read(hm2); // check the status of the fault bit
     hm2_dpll_process_tram_read(hm2, period);
 
-    HM2_TRACE(&hm2->trace, HM2_TRACE_READ_EXIT, 0);
+    HM2_TRACE(&hm2->trace, HM2_TRACE_READ_EXIT);
 }
 
 
 static void hm2_write(void *void_hm2, long period) {
     hostmot2_t *hm2 = void_hm2;
 
-    HM2_TRACE(&hm2->trace, HM2_TRACE_WRITE_ENTER, 0);
+    HM2_TRACE(&hm2->trace, HM2_TRACE_WRITE_ENTER);
 
     // if there are comm problems, wait for the user to fix it
     if ((*hm2->llio->io_error) != 0) return;
@@ -187,7 +189,7 @@ static void hm2_write(void *void_hm2, long period) {
     hm2_raw_write(hm2);
     hm2_finish_write(hm2);
 
-    HM2_TRACE(&hm2->trace, HM2_TRACE_WRITE_EXIT, 0);
+    HM2_TRACE(&hm2->trace, HM2_TRACE_WRITE_EXIT);
 
     hm2_trace_trigger_eval(
         &hm2->trigger,

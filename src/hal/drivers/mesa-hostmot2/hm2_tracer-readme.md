@@ -155,14 +155,9 @@ ring buffer.
 Each event contains:
 
 * timestamp
-* CPU number
 * event identifier
-* optional value
 
 The event identifier defines the meaning of the tracepoint.
-
-The optional value allows tracepoints to transport additional
-context without changing the trace record format.
 
 The userspace logger converts event identifiers into readable
 text.
@@ -213,6 +208,21 @@ Whenever a new snapshot becomes available it:
 The logger never modifies snapshot data.
 
 
+The generated event table contains the following columns.
+
+| Column | Description |
+|--------|-------------|
+| idx | Ring buffer index. |
+| timestamp | Absolute realtime timestamp stored in the trace event. |
+| snapshot(ns) | Time elapsed from the first event contained in the exported snapshot. |
+| cycle(ns) | Time elapsed from the most recent `CYCLE_START` event. Events preceding the first `CYCLE_START` are reported as `n/a`. |
+| event(ns) | Time elapsed from the previous trace event. The first event of the snapshot is reported as `n/a`. |
+| event | Human-readable event name. |
+
++The userspace logger inserts an empty line before every
++`CYCLE_START` event to improve readability of individual
++servo cycles.
+
 ---
 
 # 10. Extending the Tracer
@@ -228,3 +238,17 @@ Examples of future extensions include:
 * additional exported statistics
 * additional userspace analysis tools
 
+
+
+---
+
+# TODO
+
+Tato kapitola slouží pouze během vývoje. Před začleněním traceru
+do hlavní větve musí být prázdná.
+
+* vyřešit posunutí dat z ring bufferu vůči snapshotu
+* zvýraznit šipkou data v ring bufferu, která odpovídají okamžiku snapshotu
+* zvážit změnu architektury s ohledem na předchozí bod – orchestrátor by měl být `hm2_trace.c`, nikoliv `hostmot2.c`
+* přidat do `loadrt hm2_eth` konfigurační volbu pro aktivaci traceru (existuje příprava `HM2_TRACE_DISABLE`)
+* doplnit uživatelskou dokumentaci HostMot2 (`*.adoc`) o postup spuštění loggeru (`loadusr hm2-trace-log`)

@@ -1,3 +1,23 @@
+/*
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ *
+ * HostMot2 Trace Infrastructure
+ *
+ * This file is part of the HostMot2 trace infrastructure.
+ *
+ * The HostMot2 tracer is a generic realtime diagnostic framework
+ * for collecting timestamped trace events, runtime statistics and
+ * frozen snapshots for offline analysis.
+ *
+ * Architecture and design documentation:
+ *     hm2_tracer-readme.md
+ *
+ * Copyright (C) 2026 zz912
+ *
+ * Originally developed by zz912 with implementation assistance
+ * from OpenAI ChatGPT.
+ */
+
 #ifndef HM2_TRACE_TRIGGER_H
 #define HM2_TRACE_TRIGGER_H
 
