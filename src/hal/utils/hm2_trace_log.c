@@ -137,7 +137,7 @@ int main(void)
     signal(SIGINT, signal_handler);
     signal(SIGTERM, signal_handler);
 
-    uint32_t last_generation = UINT32_MAX;
+    uint32_t last_generation = shmem->generation;
 
     HM2_TRACE_INFO("Waiting for trigger...");
 
@@ -148,6 +148,12 @@ int main(void)
             usleep(100000);
             continue;
         }
+
+        HM2_TRACE_INFO("shmem->generation: %i", shmem->generation);
+        HM2_TRACE_INFO("last_generation: %i", last_generation);
+        HM2_TRACE_INFO("UINT32_MAX: %i", UINT32_MAX);
+        HM2_TRACE_INFO("last_generation != UINT32_MAX %i", (last_generation != UINT32_MAX));
+        HM2_TRACE_INFO("shmem->generation == last_generation: %i", (shmem->generation == last_generation));     
 
         last_generation = shmem->generation;
 

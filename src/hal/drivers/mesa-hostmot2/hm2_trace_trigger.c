@@ -1,5 +1,6 @@
 #include "hm2_trace_trigger.h"
 #include "hm2_trace.h"
+#include <rtapi.h>
 
 int hm2_trace_trigger_init(struct hm2_trace_trigger *trigger)
 {

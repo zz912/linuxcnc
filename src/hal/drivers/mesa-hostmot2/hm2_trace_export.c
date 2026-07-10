@@ -56,8 +56,6 @@ int hm2_trace_export(
     if (export_shmem == NULL)
         return -1;
 
-    export_shmem->generation++;
-
     export_shmem->read_runtime_ns = trace->read_runtime_ns;
     export_shmem->write_runtime_ns = trace->write_runtime_ns;
     export_shmem->total_runtime_ns = trace->total_runtime_ns;
