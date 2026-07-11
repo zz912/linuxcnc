@@ -208,6 +208,9 @@ int main(void)
 
         fprintf(log, "ring_size         : %u\n", shmem->ring_size);
         fprintf(log, "ring_head         : %u\n", shmem->ring_head);
+        fprintf(log, "trigger_index     : %u\n", shmem->trigger_index);
+        fprintf(log, "samples_written   : %llu\n",
+                (unsigned long long)shmem->samples_written);
 
         fprintf(log, "\n");
         fprintf(log, "Ring buffer:\n");
@@ -231,16 +234,50 @@ int main(void)
                 count = (uint32_t)shmem->samples_written;
                 start = 0;
             } else {
+                start = (shmem->trigger_index +
+                        shmem->ring_size -
+                        (shmem->ring_size / 2)) %
+                        shmem->ring_size;
+
                 count = shmem->ring_size;
-                start = shmem->ring_head;
             }
 
-            if (count > 0)
-                base_timestamp = shmem->ring[start].timestamp;
+            if (count > 0) {
+                uint32_t base_idx;
+
+                if (shmem->samples_written < shmem->ring_size)
+                    base_idx = 0;
+                else
+                    base_idx = start;
+
+                fprintf(log, "export_start : %u\n", start);
+                fprintf(log, "export_count : %u\n", count);
+                fprintf(log, "first_idx    : %u\n", start);
+                fprintf(log, "last_idx     : %u\n",
+                        (start + count - 1) % shmem->ring_size);
+                fprintf(log, "trigger_idx  : %u\n",
+                        shmem->trigger_index);
+                fprintf(log, "\n");
+
+                base_timestamp = shmem->ring[base_idx].timestamp;
+            }
 
             for (i = 0; i < count; i++) {
                 uint32_t idx = (start + i) % shmem->ring_size;
                 const struct hm2_trace_entry *e = &shmem->ring[idx];
+
+                if (idx == shmem->trigger_index) {
+                    fprintf(log, "\n");
+                    fprintf(log, "\n");
+                    fprintf(log,
+                        "========================================================================\n");
+                    fprintf(log,
+                        "========================== TRIGGER DETECTED ============================\n");
+                    fprintf(log,
+                        "========================================================================\n");
+                    fprintf(log, "\n");
+                    fprintf(log, "\n");
+                }
 
                 if (e->event == HM2_TRACE_CYCLE_START) {
                     fprintf(log, "\n");

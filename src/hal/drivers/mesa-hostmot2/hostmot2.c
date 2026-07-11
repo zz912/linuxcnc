@@ -197,9 +197,16 @@ static void hm2_write(void *void_hm2, long period) {
         period);
 
     if (hm2->trigger.freeze_requested &&
-        !hm2->trace.frozen) {
+        !hm2->trace.trigger_active) {
 
-        hm2->trace.frozen = true;
+        hm2->trace.trigger_active = 1;
+        hm2->trace.remaining_after_trigger =
+            HM2_TRACE_RING_SIZE / 2;
+    }
+
+    if (hm2->trace.export_pending) {
+
+        hm2->trace.export_pending = 0;
 
         hm2_trace_export(&hm2->trace, &hm2->trigger);
 

@@ -85,6 +85,7 @@ int hm2_trace_export(
     export_shmem->total_tmax_ns = trace->total_tmax_ns;
 
     export_shmem->ring_head = trace->head;
+    export_shmem->trigger_index = trace->trigger_index;
     export_shmem->ring_size = HM2_TRACE_RING_SIZE;
     export_shmem->samples_written = trace->samples_written;
 

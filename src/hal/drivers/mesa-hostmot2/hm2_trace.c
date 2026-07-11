@@ -30,7 +30,13 @@ int hm2_trace_init(struct hm2_trace *trace)
     trace->enabled = 1;
     trace->frozen = 0;
 
+    trace->trigger_active = 0;
+    trace->export_pending = 0;
+    trace->trigger_index = 0;
+    trace->remaining_after_trigger = 0;
+
     trace->head = 0;
+    trace->trigger_head = 0;
     trace->size = HM2_TRACE_RING_SIZE;
     trace->samples_written = 0;
 
@@ -117,6 +123,23 @@ void hm2_trace_log(
 
     entry->timestamp = now;
     entry->event = event;
+
+    if (trace->trigger_active) {
+
+        if (trace->remaining_after_trigger ==
+            HM2_TRACE_RING_SIZE / 2)
+            trace->trigger_index =
+                (trace->head + trace->size - 1) % trace->size;
+
+        if (trace->remaining_after_trigger > 0) {
+            trace->remaining_after_trigger--;
+
+            if (trace->remaining_after_trigger == 0){
+                trace->frozen = 1;
+                trace->export_pending = 1;
+            }
+        }
+    }
 
     trace->head++;
 

@@ -170,8 +170,11 @@ text.
 The trigger continuously evaluates the collected runtime
 information.
 
-When a trigger condition becomes true, the current tracer state
-is frozen and exported as a snapshot.
+When a trigger condition becomes true, tracing continues for a
+configurable post-trigger capture window.
+
+After the capture window has been recorded, the tracer freezes
+and requests snapshot export.
 
 The trigger mechanism is independent of the exported data and
 may support multiple trigger conditions.
@@ -207,6 +210,12 @@ Whenever a new snapshot becomes available it:
 
 The logger never modifies snapshot data.
 
+The logger inserts an empty line before every `CYCLE_START`
+event to improve readability of individual servo cycles.
+
+The trigger location is highlighted by a dedicated marker,
+making it easy to identify the transition between events
+captured before and after the trigger.
 
 The generated event table contains the following columns.
 
@@ -247,8 +256,8 @@ Examples of future extensions include:
 Tato kapitola slouží pouze během vývoje. Před začleněním traceru
 do hlavní větve musí být prázdná.
 
-* vyřešit posunutí dat z ring bufferu vůči snapshotu
-* zvýraznit šipkou data v ring bufferu, která odpovídají okamžiku snapshotu
-* zvážit změnu architektury s ohledem na předchozí bod – orchestrátor by měl být `hm2_trace.c`, nikoliv `hostmot2.c`
+* přesunout orchestrace trigger/freeze/export z `hostmot2.c` do `hm2_trace.c`. Timestamps budou posílat jen typ eventu. Vyčítání času bude probíhat v `hm2_trace.c`
 * přidat do `loadrt hm2_eth` konfigurační volbu pro aktivaci traceru (existuje příprava `HM2_TRACE_DISABLE`)
+* Parametry trigeru ovládat z `hm2_trace_trigger.h`
 * doplnit uživatelskou dokumentaci HostMot2 (`*.adoc`) o postup spuštění loggeru (`loadusr hm2-trace-log`)
+* doplnit hlavičku log file. Že se jedná o log file hm2 trace, datum a čas.

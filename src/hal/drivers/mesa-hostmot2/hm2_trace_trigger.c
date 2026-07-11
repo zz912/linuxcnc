@@ -28,8 +28,7 @@ int hm2_trace_trigger_init(struct hm2_trace_trigger *trigger)
         return -1;
     }
 
-//    trigger->config.latency_threshold_pct = 50;
-    trigger->config.latency_threshold_pct = 20;
+    trigger->config.latency_threshold_pct = 50;
 
     trigger->freeze_requested = false;
 

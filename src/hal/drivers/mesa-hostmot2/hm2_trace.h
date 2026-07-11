@@ -47,7 +47,13 @@ struct hm2_trace {
     int enabled;
     int frozen;
 
+    int trigger_active;
+    int export_pending;
+    uint32_t trigger_index;
+    uint32_t remaining_after_trigger;
+
     rtapi_u32 head;
+    rtapi_u32 trigger_head;
     rtapi_u32 size;
     rtapi_u64 samples_written;
 
